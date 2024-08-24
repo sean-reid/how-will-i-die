@@ -54,6 +54,7 @@
                 const locations = get_locations();
                 cachedLocations = JSON.stringify(locations);
                 localStorage.setItem('cachedLocations', cachedLocations);
+                cachedLocations = JSON.parse(cachedLocations);
             } else {
                 cachedLocations = JSON.parse(cachedLocations);
             }
