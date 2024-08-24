@@ -1,0 +1,6 @@
+/target
+data
+mortality_data.csv
+combine
+combined.csv
+.DS_Store

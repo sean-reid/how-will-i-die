@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Will I Die?</title>
+    <!-- Include Pico.css -->
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.5.7/css/pico.min.css">
+</head>
+<body>
+    <main class="container">
+        <h1>How Will I Die?</h1>
+        <form id="prediction-form">
+            <label for="location">Location</label>
+            <select id="location" name="location" required>
+                <option value="" disabled selected>Select your location</option>
+            </select>
+
+            <label for="age">Age</label>
+            <input type="number" id="age" name="age" placeholder="Enter your age" required>
+
+            <label for="sex">Sex</label>
+            <select id="sex" name="sex" required>
+                <option value="" disabled selected>Select your sex</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+
+            <button type="submit" class="primary">Predict</button>
+        </form>
+        <p id="result"></p>
+    </main>
+
+    <footer class="container">
+        <p>
+            Institute for Health Metrics and Evaluation (IHME). GBD Compare. Seattle, WA: IHME,
+            University of Washington, 2015. Available from
+            <a href="http://vizhub.healthdata.org/gbd-compare" target="_blank">http://vizhub.healthdata.org/gbd-compare</a>.
+            (Accessed August 24, 2024)
+        </p>
+    </footer>
+
+    <script type="module">
+        import init, { predict, get_locations } from './pkg/how_will_i_die.js';
+
+        async function main() {
+            await init(); // Initialize the WebAssembly module
+
+            const locationSelect = document.getElementById('location');
+            let cachedLocations = localStorage.getItem('cachedLocations');
+
+            if (!cachedLocations) {
+                // Fetch the locations from the WASM module
+                const locations = get_locations();
+                cachedLocations = JSON.stringify(locations);
+                localStorage.setItem('cachedLocations', cachedLocations);
+            } else {
+                cachedLocations = JSON.parse(cachedLocations);
+            }
+
+            // Populate the location dropdown
+            cachedLocations.forEach(location => {
+                const option = document.createElement('option');
+                option.value = location;
+                option.textContent = location;
+                locationSelect.appendChild(option);
+            });
+
+            const form = document.getElementById('prediction-form');
+            const resultElement = document.getElementById('result');
+
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const location = document.getElementById('location').value;
+                const age = parseInt(document.getElementById('age').value, 10);
+                const sex = document.getElementById('sex').value;
+
+                // Call the predict function
+                const results = predict(location, age, sex);
+
+                if (results && results.length > 0) {
+                    resultElement.innerHTML = `<h3>Top 10 Most Likely Causes of Death:</h3><ol>`;
+                    results.forEach((cause) => {
+                        resultElement.innerHTML += `<li>${cause}</li>`;
+                    });
+                    resultElement.innerHTML += `</ol>`;
+                } else {
+                    resultElement.textContent = 'No data available for the given inputs.';
+                }
+            });
+        }
+
+        main();
+    </script>
+</body>
+</html>
+

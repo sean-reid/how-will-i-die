@@ -1,0 +1,14 @@
+{
+  "name": "how-will-i-die",
+  "version": "0.1.0",
+  "files": [
+    "how_will_i_die_bg.wasm",
+    "how_will_i_die.js",
+    "how_will_i_die.d.ts"
+  ],
+  "module": "how_will_i_die.js",
+  "types": "how_will_i_die.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
