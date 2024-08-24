@@ -106,12 +106,14 @@ pub fn predict(location: &str, age: u32, sex: &str) -> Vec<JsValue> {
 #[wasm_bindgen]
 pub fn get_locations() -> Vec<JsValue> {
     let records = load_mortality_data();
-    let mut locations = HashSet::new();
+    let mut locations: Vec<String> = records
+        .into_iter()
+        .map(|record| record.location_name)
+        .collect::<HashSet<_>>()
+        .into_iter()
+        .collect();
 
-    for record in records {
-        locations.insert(record.location_name.clone());
-    }
+    locations.sort();
 
     locations.into_iter().map(JsValue::from).collect()
 }
-
