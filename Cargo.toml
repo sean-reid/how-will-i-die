@@ -2,13 +2,22 @@
 name = "how-will-i-die"
 version = "0.1.0"
 edition = "2021"
+description = "Predicts the most likely causes of death by location, age, and sex from IHME mortality data"
+license = "MIT"
+repository = "https://github.com/sean-reid/how-will-i-die"
 
 [dependencies]
 csv = "1.1"
 serde = { version = "1.0", features = ["derive"] }
-serde_derive = "1.0"
 wasm-bindgen = "0.2"
 web-sys = { version = "0.3", features = ["console"] }
+console_error_panic_hook = "0.1"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
