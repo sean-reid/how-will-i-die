@@ -3,97 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+
     <title>How Will I Die?</title>
-    <!-- Include Pico.css -->
-    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.5.7/css/pico.min.css">
+    <meta name="description" content="See the leading causes of death for people who share your location, age, and sex, drawn from the Global Burden of Disease study.">
+    <meta name="theme-color" content="#1095c1">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path fill='%23222' d='M16 3C9.4 3 4 8.4 4 15c0 4 2 7.4 4.5 9.2V27a2 2 0 0 0 2 2H12v-3h2v3h2v-3h2v3h2.5a2 2 0 0 0 2-2v-2.8C25 22.4 27 19 27 15 27 8.4 22.6 3 16 3z'/><circle cx='11.5' cy='14' r='3' fill='%23fff'/><circle cx='20.5' cy='14' r='3' fill='%23fff'/></svg>">
+
+    <meta property="og:title" content="How Will I Die?">
+    <meta property="og:description" content="See the leading causes of death for people who share your location, age, and sex, drawn from the Global Burden of Disease study.">
+    <meta property="og:type" content="website">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="How Will I Die?">
+    <meta name="twitter:description" content="See the leading causes of death for people who share your location, age, and sex, drawn from the Global Burden of Disease study.">
+
+    <link rel="stylesheet" href="assets/pico.min.css">
+    <link rel="stylesheet" href="assets/app.css">
 </head>
 <body>
     <main class="container">
         <h1>How Will I Die?</h1>
+        <p class="subtitle">Population-level statistics from the Global Burden of Disease study, not a personal prediction.</p>
+
+        <p id="status" aria-live="polite">Loading mortality data...</p>
+
         <form id="prediction-form">
             <label for="location">Location</label>
-            <select id="location" name="location" required>
-                <option value="" disabled selected>Select your location</option>
+            <select id="location" name="location" required disabled>
+                <option value="" disabled selected>Loading locations...</option>
             </select>
 
             <label for="age">Age</label>
-            <input type="number" id="age" name="age" placeholder="Enter your age" required>
+            <input type="number" id="age" name="age" placeholder="Enter your age" min="0" max="110" step="1" inputmode="numeric" required disabled>
 
             <label for="sex">Sex</label>
-            <select id="sex" name="sex" required>
+            <select id="sex" name="sex" required disabled>
                 <option value="" disabled selected>Select your sex</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
             </select>
+            <small class="field-note">Reflects the two categories recorded in the dataset.</small>
 
-            <button type="submit" class="primary">Predict</button>
+            <button type="submit" id="submit" class="primary" disabled>Predict</button>
         </form>
-        <p id="result"></p>
+
+        <section id="result" aria-live="polite"></section>
     </main>
 
     <footer class="container">
+        <p class="crisis-note">
+            If you are struggling, help is available: call or text 988 (US) or visit
+            <a href="https://findahelpline.com" target="_blank" rel="noopener noreferrer">findahelpline.com</a>.
+        </p>
         <p>
             Institute for Health Metrics and Evaluation (IHME). GBD Compare. Seattle, WA: IHME,
             University of Washington, 2015. Available from
-            <a href="http://vizhub.healthdata.org/gbd-compare" target="_blank">http://vizhub.healthdata.org/gbd-compare</a>.
+            <a href="https://vizhub.healthdata.org/gbd-compare" target="_blank" rel="noopener noreferrer">https://vizhub.healthdata.org/gbd-compare</a>.
             (Accessed August 24, 2024)
         </p>
     </footer>
 
-    <script type="module">
-        import init, { predict, get_locations } from './pkg/how_will_i_die.js';
-
-        async function main() {
-            await init(); // Initialize the WebAssembly module
-
-            const locationSelect = document.getElementById('location');
-            let cachedLocations = localStorage.getItem('cachedLocations');
-
-            if (!cachedLocations) {
-                // Fetch the locations from the WASM module
-                const locations = get_locations();
-                cachedLocations = JSON.stringify(locations);
-                localStorage.setItem('cachedLocations', cachedLocations);
-                cachedLocations = JSON.parse(cachedLocations);
-            } else {
-                cachedLocations = JSON.parse(cachedLocations);
-            }
-
-            // Populate the location dropdown
-            cachedLocations.forEach(location => {
-                const option = document.createElement('option');
-                option.value = location;
-                option.textContent = location;
-                locationSelect.appendChild(option);
-            });
-
-            const form = document.getElementById('prediction-form');
-            const resultElement = document.getElementById('result');
-
-            form.addEventListener('submit', async (event) => {
-                event.preventDefault();
-
-                const location = document.getElementById('location').value;
-                const age = parseInt(document.getElementById('age').value, 10);
-                const sex = document.getElementById('sex').value;
-
-                // Call the predict function
-                const results = predict(location, age, sex);
-
-                if (results && results.length > 0) {
-                    resultElement.innerHTML = `<h3>Top 10 Most Likely Causes of Death:</h3><ol>`;
-                    results.forEach((cause) => {
-                        resultElement.innerHTML += `<li>${cause}</li>`;
-                    });
-                    resultElement.innerHTML += `</ol>`;
-                } else {
-                    resultElement.textContent = 'No data available for the given inputs.';
-                }
-            });
-        }
-
-        main();
-    </script>
+    <script type="module" src="assets/app.js"></script>
 </body>
 </html>
-
