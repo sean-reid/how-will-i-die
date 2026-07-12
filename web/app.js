@@ -50,6 +50,18 @@ function bandLabel(age) {
   return b == null ? `${a} and older` : `${a} to ${b}`;
 }
 
+const GHE_STARTS = [0, 5, 15, 30, 50, 60, 70];
+// GHE countries only resolve causes to coarse bands, so map an age to its band
+// start; the cohort and its label then match the data's real granularity.
+function bandStart(age, source) {
+  if (source === "ghe") {
+    let start = 0;
+    for (const s of GHE_STARTS) if (age >= s) start = s;
+    return start;
+  }
+  return Math.min(85, age - (age % 5));
+}
+
 function oneInN(p) {
   return `about 1 in ${Math.round(1 / p)}`;
 }
@@ -175,7 +187,9 @@ function groupRow(group, rank, iso3, onExpand) {
 }
 
 function render(shard, sex, ageInt) {
-  const band = Math.min(85, ageInt - (ageInt % 5));
+  const country = (index.countries || []).find((c) => c.iso3 === shard.iso3);
+  const source = country?.source ?? "mdb";
+  const band = bandStart(ageInt, source);
   const cohort = shard.cohorts[`${sex}|${band}`];
   resultEl.textContent = "";
   if (!cohort || !cohort.groups.length) {
@@ -183,7 +197,6 @@ function render(shard, sex, ageInt) {
     return;
   }
 
-  const country = (index.countries || []).find((c) => c.iso3 === shard.iso3);
   const countryName = country?.name ?? shard.iso3;
 
   const context = document.createElement("p");

@@ -28,6 +28,11 @@ NOTE = "Population statistics projected from WHO mortality data, not a personal 
 GROUP_MIN = 0.002
 LEAF_MIN = 0.001
 
+# GHE cause data is only resolved to these coarse bands, so GHE countries are
+# exposed at this granularity rather than the finer life-table 5-year bands
+# (which would overstate the resolution the cause split actually has).
+GHE_BANDS = {0: 4, 5: 14, 15: 29, 30: 49, 50: 59, 60: 69, 70: None}
+
 
 def _parent_map(causes: pd.DataFrame) -> dict[int, int]:
     return {int(r.ghe_id): int(r.parent_id) for r in causes.itertuples() if pd.notna(r.parent_id)}
@@ -75,10 +80,18 @@ def build(intermediate: Path, mappings: Path, out_dir: Path) -> None:
     countries = []
 
     for iso3, cdf in lifetime.groupby("iso3", sort=True):
+        src = source_by_iso.get(iso3, "mdb")
         cohorts = {}
         for (sex, a0, a1), sdf in cdf.groupby(
             ["sex", "start_age_start", "start_age_end"], sort=True, dropna=False
         ):
+            a0 = int(a0)
+            if src == "ghe":
+                if a0 not in GHE_BANDS:
+                    continue  # only expose the coarse bands GHE actually resolves
+                end = GHE_BANDS[a0]
+            else:
+                end = None if pd.isna(a1) else int(a1)
             rows = []
             for gid, gdf in sdf.groupby("group", sort=False):
                 prob = round(float(gdf["prob"].sum()), 4)
@@ -101,8 +114,7 @@ def build(intermediate: Path, mappings: Path, out_dir: Path) -> None:
                     }
                 )
             rows.sort(key=lambda r: (-r["p"], labels[r["g"]]))
-            end = None if pd.isna(a1) else int(a1)
-            cohorts[f"{sex}|{int(a0)}"] = {"age": [int(a0), end], "groups": rows}
+            cohorts[f"{sex}|{a0}"] = {"age": [a0, end], "groups": rows}
         _write_json(out_dir / f"{iso3}.json", {"iso3": iso3, "cohorts": cohorts})
         countries.append(
             {
