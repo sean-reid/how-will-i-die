@@ -20,18 +20,26 @@
         </p>
 
         <form id="query" hidden>
-            <label for="country">Country</label>
-            <select id="country" name="country" required></select>
+            <label id="country-label" for="country-input">Country</label>
+            <div class="combobox">
+                <input id="country-input" type="text" role="combobox" aria-expanded="false"
+                       aria-controls="country-list" aria-autocomplete="list"
+                       aria-labelledby="country-label" autocomplete="off"
+                       placeholder="Type to search" required>
+                <button type="button" id="country-clear" class="clear" aria-label="Clear country" hidden>&times;</button>
+                <ul id="country-list" role="listbox" aria-label="Countries" hidden></ul>
+            </div>
 
             <label for="age">Age</label>
             <input type="number" id="age" name="age" min="0" max="110" step="1" inputmode="numeric" required>
 
-            <label for="sex">Sex <span class="note">as recorded in the data</span></label>
-            <select id="sex" name="sex" required>
-                <option value="" disabled selected>Select</option>
-                <option value="female">Female</option>
-                <option value="male">Male</option>
-            </select>
+            <fieldset class="segmented">
+                <legend>Sex <span class="note">as recorded in the data</span></legend>
+                <div class="options">
+                    <label><input type="radio" name="sex" value="female"> Female</label>
+                    <label><input type="radio" name="sex" value="male"> Male</label>
+                </div>
+            </fieldset>
 
             <button type="submit">Show causes</button>
         </form>

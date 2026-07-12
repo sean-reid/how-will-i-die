@@ -183,12 +183,23 @@ function render(shard, sex, ageInt) {
     return;
   }
 
+  const country = (index.countries || []).find((c) => c.iso3 === shard.iso3);
+  const countryName = country?.name ?? shard.iso3;
+
   const context = document.createElement("p");
   context.className = "context";
   context.textContent =
-    `Based on ${sex === "male" ? "men" : "women"} in ${shard.name ?? shard.iso3}, aged ${bandLabel(cohort.age)}. ` +
+    `Based on ${sex === "male" ? "men" : "women"} in ${countryName}, aged ${bandLabel(cohort.age)}. ` +
     "These are model projections, so the order matters more than the exact figures.";
   resultEl.appendChild(context);
+
+  if (country && country.source === "ghe") {
+    const note = document.createElement("p");
+    note.className = "source-note";
+    note.textContent =
+      "Regional modeled estimate - lower detail than countries with death-registration data.";
+    resultEl.appendChild(note);
+  }
 
   const headline = document.createElement("div");
   headline.className = "headline-wrap";
@@ -213,6 +224,140 @@ function render(shard, sex, ageInt) {
   heading.focus({ preventScroll: true });
 }
 
+// The country the user has committed to via the combobox (null until chosen).
+let selectedIso3 = null;
+
+// Accessible searchable combobox over the ~185 countries. Vanilla, no deps.
+function setupCountryCombobox() {
+  const input = document.getElementById("country-input");
+  const list = document.getElementById("country-list");
+  const clearBtn = document.getElementById("country-clear");
+  const countries = index.countries ?? [];
+  let shown = [];
+  let active = -1;
+
+  const updateClear = () => {
+    clearBtn.hidden = !input.value;
+  };
+
+  function close() {
+    list.hidden = true;
+    input.setAttribute("aria-expanded", "false");
+    input.removeAttribute("aria-activedescendant");
+    active = -1;
+  }
+
+  function choose(country) {
+    selectedIso3 = country.iso3;
+    input.value = country.name;
+    updateClear();
+    close();
+  }
+
+  function paint() {
+    list.textContent = "";
+    shown.forEach((country, i) => {
+      const li = document.createElement("li");
+      li.id = `country-opt-${i}`;
+      li.setAttribute("role", "option");
+      li.setAttribute("aria-selected", String(i === active));
+      li.textContent = country.name;
+      li.addEventListener("mousedown", (event) => {
+        event.preventDefault();
+        choose(country);
+      });
+      list.appendChild(li);
+    });
+  }
+
+  function open(showAll = false) {
+    const q = input.value.trim().toLowerCase();
+    shown = q && !showAll ? countries.filter((c) => c.name.toLowerCase().includes(q)) : countries;
+    active = -1;
+    paint();
+    if (shown.length) {
+      list.hidden = false;
+      input.setAttribute("aria-expanded", "true");
+    } else {
+      close();
+    }
+  }
+
+  function move(step) {
+    if (list.hidden) open();
+    if (!shown.length) return;
+    active = (active + step + shown.length) % shown.length;
+    [...list.children].forEach((li, i) => li.setAttribute("aria-selected", String(i === active)));
+    const el = list.children[active];
+    input.setAttribute("aria-activedescendant", el.id);
+    el.scrollIntoView({ block: "nearest" });
+  }
+
+  input.addEventListener("input", () => {
+    selectedIso3 = null;
+    updateClear();
+    open();
+  });
+  clearBtn.addEventListener("click", () => {
+    input.value = "";
+    selectedIso3 = null;
+    updateClear();
+    input.focus();
+    open(true);
+  });
+  // Select the text and show the full list on focus, so the pre-filled default
+  // can be typed over or cleared in one action.
+  input.addEventListener("focus", () => {
+    input.select();
+    open(true);
+  });
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      move(1);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      move(-1);
+    } else if (event.key === "Enter" && !list.hidden && active >= 0) {
+      event.preventDefault();
+      choose(shown[active]);
+    } else if (event.key === "Escape") {
+      close();
+    }
+  });
+  document.addEventListener("click", (event) => {
+    if (!event.target.closest(".combobox")) close();
+  });
+}
+
+// The sex toggle: reflect the checked radio onto the container so the sliding
+// highlight (a data-attribute in CSS) tracks it, no :has dependency.
+function setupSex() {
+  const options = document.querySelector(".segmented .options");
+  options.querySelectorAll('input[name="sex"]').forEach((radio) => {
+    radio.addEventListener("change", () => {
+      options.dataset.sex = radio.value;
+    });
+  });
+}
+
+// Pre-fill so the page works with a single click; the visitor can adjust.
+function applyDefaults() {
+  const countries = index.countries ?? [];
+  const start = countries.find((c) => c.iso3 === "USA") ?? countries[0];
+  if (start) {
+    document.getElementById("country-input").value = start.name;
+    document.getElementById("country-clear").hidden = false;
+    selectedIso3 = start.iso3;
+  }
+  document.getElementById("age").value = "40";
+  const female = formEl.querySelector('input[name="sex"][value="female"]');
+  if (female) {
+    female.checked = true;
+    document.querySelector(".segmented .options").dataset.sex = "female";
+  }
+}
+
 async function main() {
   try {
     index = await loadIndex();
@@ -221,27 +366,19 @@ async function main() {
     return;
   }
 
-  const countrySelect = document.getElementById("country");
-  const placeholder = document.createElement("option");
-  placeholder.value = "";
-  placeholder.disabled = true;
-  placeholder.selected = true;
-  placeholder.textContent = "Select";
-  countrySelect.appendChild(placeholder);
-  for (const country of index.countries ?? []) {
-    const option = document.createElement("option");
-    option.value = country.iso3;
-    option.textContent = country.name;
-    countrySelect.appendChild(option);
-  }
+  setupCountryCombobox();
+  setupSex();
+  applyDefaults();
+  document.getElementById("age").addEventListener("focus", (event) => event.target.select());
 
   statusEl.hidden = true;
   formEl.hidden = false;
 
   formEl.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const iso3 = countrySelect.value;
-    const sex = document.getElementById("sex").value;
+    const iso3 = selectedIso3;
+    const checked = formEl.querySelector('input[name="sex"]:checked');
+    const sex = checked ? checked.value : "";
     const ageInt = parseInt(document.getElementById("age").value, 10);
     if (!iso3 || !sex || Number.isNaN(ageInt) || ageInt < 0 || ageInt > 110) {
       resultEl.textContent = "Please choose a country and sex and enter an age between 0 and 110.";
