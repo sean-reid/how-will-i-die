@@ -17,6 +17,11 @@ from .lee_carter import LeeCarter
 NOW_YEAR = 2025
 N_DRAWS = 200
 SEED = 20260711
+# Allowance for model and extrapolation uncertainty that parameter sampling does
+# not capture (whether the fitted trends hold for decades). Widens the interval
+# in proportion to the projection horizon; 0 would leave only parametric spread.
+STRUCT_INFLATE = 2.0
+HORIZON_REF = 65.0
 
 
 def _cause_band(lt_age: int) -> int:
@@ -39,6 +44,11 @@ def lifetime_causes(lc: LeeCarter, comp: Composition) -> list[tuple]:
 
     rng = np.random.default_rng(SEED)
     draws = rng.normal(lc.drift, lc.drift_se, N_DRAWS)
+    # Per-band composition perturbations: each draw also gets its own sampled
+    # cause-trend trajectory, so the bands reflect cause-mix uncertainty too.
+    z_by_band = {
+        b: rng.standard_normal((N_DRAWS, len(fit.ids))) for b, fit in sorted(comp.bands.items())
+    }
 
     start_ages = [a for a in ages if a != 1]  # cause-band starts; skip the 1-4 split
     rows: list[tuple] = []
@@ -55,7 +65,10 @@ def lifetime_causes(lc: LeeCarter, comp: Composition) -> list[tuple]:
             h = diag_year - lc.jump
             damp = _damp(h, lc.phi)
             k_pt = lc.k[lc.jump] + lc.drift * damp
-            k_dr = lc.k[lc.jump] + draws * damp
+            # Central path is damped, but the drift-estimation uncertainty
+            # accumulates with the raw horizon like a random walk, so a 20-year
+            # projection is honestly wider than a 5-year one.
+            k_dr = k_pt + (draws - lc.drift) * h
             floor = 0.5 * lc.hist_min_mx[b]
             mx_pt = max(float(np.exp(lc.a[b] + lc.b[b] * k_pt)), floor)
             mx_dr = np.maximum(np.exp(lc.a[b] + lc.b[b] * k_dr), floor)
@@ -70,19 +83,27 @@ def lifetime_causes(lc: LeeCarter, comp: Composition) -> list[tuple]:
 
             dd_pt = surv_pt * q_pt
             dd_dr = surv_dr * q_dr
-            f = comp.frac_vector(_cause_band(ages[b]), diag_year, index)
+            cb = _cause_band(ages[b])
+            f = comp.frac_vector(cb, diag_year, index)
+            fm = comp.frac_matrix(cb, diag_year, index, z_by_band[cb])
             pi_pt += dd_pt * f
-            pi_dr += dd_dr[:, None] * f[None, :]
+            pi_dr += dd_dr[:, None] * fm
             surv_pt *= 1.0 - q_pt
             surv_dr *= 1.0 - q_dr
 
         if abs(pi_pt.sum() - 1.0) > 1e-9:
             raise ValueError(f"lifetime shares do not sum to 1 (start {start}): {pi_pt.sum()}")
 
+        # Inflate the draw spread around the point for structural uncertainty,
+        # growing with this cohort's projection horizon.
+        infl = 1.0 + STRUCT_INFLATE * (ages[-1] - start) / HORIZON_REF
+        pi_dr = np.clip(pi_pt[None, :] + (pi_dr - pi_pt[None, :]) * infl, 0.0, 1.0)
         lo = np.percentile(pi_dr, 5, axis=0)
         hi = np.percentile(pi_dr, 95, axis=0)
         end = None if start == max(ages) else start + 4
         for i, gid in enumerate(union):
             if pi_pt[i] > 0:
-                rows.append((start, end, gid, float(pi_pt[i]), float(lo[i]), float(hi[i])))
+                p = float(pi_pt[i])
+                # The interval always contains the point estimate.
+                rows.append((start, end, gid, p, min(float(lo[i]), p), max(float(hi[i]), p)))
     return rows

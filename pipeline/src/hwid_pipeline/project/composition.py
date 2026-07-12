@@ -29,6 +29,7 @@ class BandFit:
     ids: np.ndarray  # GHE cause ids present in this band
     clr_jump: np.ndarray  # centered log-ratio at the jump-off year
     trend: np.ndarray  # shrunken slope per cause (already weighted)
+    trend_se: np.ndarray  # sampling std of the shrunken slope, for uncertainty draws
 
 
 class Composition:
@@ -47,6 +48,26 @@ class Composition:
         out = np.zeros(len(index))
         for j, gid in enumerate(fit.ids):
             out[index[int(gid)]] += f[j]
+        return out
+
+    def frac_matrix(self, band: int, year: int, index: dict[int, int], z: np.ndarray) -> np.ndarray:
+        """Shares for many draws at once. z is (n_draws, n_causes) standard normals.
+
+        Each draw perturbs the cause-trend slopes by their sampling error, so the
+        forecast composition varies across draws. The perturbation is scaled by
+        the same horizon damping as the point forecast, so longer projections
+        (younger cohorts) get proportionally wider spread.
+        """
+        fit = self.bands[band]
+        h = year - JUMPOFF
+        damp = 0.0 if h <= 0 else (1 - COMP_PHI**h) / (1 - COMP_PHI)
+        trend = fit.trend[None, :] + fit.trend_se[None, :] * z
+        clr = fit.clr_jump[None, :] + trend * damp
+        e = np.exp(clr - clr.max(axis=1, keepdims=True))
+        f = e / e.sum(axis=1, keepdims=True)
+        out = np.zeros((z.shape[0], len(index)))
+        for j, gid in enumerate(fit.ids):
+            out[:, index[int(gid)]] += f[:, j]
         return out
 
 
@@ -81,9 +102,21 @@ def fit_composition(df: pd.DataFrame, fit_years: list[int]) -> Composition:
         clr = logf - logf.mean(axis=1, keepdims=True)
         slope = (clr * centered_year[:, None]).sum(axis=0) / denom
 
+        # Sampling std of each slope, from the regression residuals.
+        fitted = clr.mean(axis=0)[None, :] + slope[None, :] * centered_year[:, None]
+        resid = clr - fitted
+        dof = max(len(fit_years) - 2, 1)
+        sigma = np.sqrt((resid**2).sum(axis=0) / dof)
+        slope_se = sigma / np.sqrt(denom)
+
         mean_share = frac.mean(axis=0)
         weight = mean_share / (mean_share + SHRINK_TAU)
 
-        bands[int(band)] = BandFit(ids=ids, clr_jump=clr[jump_row], trend=weight * slope)
+        bands[int(band)] = BandFit(
+            ids=ids,
+            clr_jump=clr[jump_row],
+            trend=weight * slope,
+            trend_se=weight * slope_se,
+        )
 
     return Composition(bands)
