@@ -1,0 +1,74 @@
+:root {
+    --bg: #ffffff;
+    --fg: #1a2733;
+    --muted: #5a6b78;
+    --accent: #0b7285;
+    --line: #d7dee3;
+    --max: 42rem;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #10171d;
+        --fg: #e7edf1;
+        --muted: #9fb0bc;
+        --accent: #3bb0c4;
+        --line: #2a353d;
+    }
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 1.5rem;
+    background: var(--bg);
+    color: var(--fg);
+    font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+main, footer { max-width: var(--max); margin: 0 auto; }
+
+h1 { font-size: 2rem; margin: 0 0 0.25rem; }
+
+.reframe {
+    color: var(--muted);
+    border-left: 3px solid var(--accent);
+    padding-left: 0.75rem;
+    margin: 0 0 1.5rem;
+}
+
+label { display: block; font-weight: 600; margin: 1rem 0 0.25rem; }
+.note { font-weight: 400; color: var(--muted); font-size: 0.85em; }
+
+select, input, button {
+    font: inherit;
+    width: 100%;
+    padding: 0.6rem 0.7rem;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--fg);
+}
+
+button {
+    margin-top: 1.25rem;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+:where(select, input, button):focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+}
+
+footer {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 0.9rem;
+}
