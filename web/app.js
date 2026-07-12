@@ -89,9 +89,9 @@ function renderHeadline(group) {
   const cap = document.createElement("figcaption");
   cap.innerHTML = "";
   const strong = document.createElement("strong");
-  strong.textContent = `${oneInN(group.p)}`;
+  strong.textContent = oneInN(group.p);
   cap.appendChild(strong);
-  cap.append(` (${percent(group.p)}) will die of ${index.groups[group.g].toLowerCase()}.`);
+  cap.append(` will die of ${index.groups[group.g].toLowerCase()}.`);
   wrap.appendChild(cap);
   return wrap;
 }
@@ -123,7 +123,7 @@ function groupRow(group, rank, iso3, onExpand) {
 
   const freq = document.createElement("span");
   freq.className = "freq";
-  freq.textContent = `${oneInN(group.p)} (${percent(group.p)})`;
+  freq.textContent = oneInN(group.p);
 
   const bar = document.createElement("span");
   bar.className = "bar";
@@ -136,6 +136,13 @@ function groupRow(group, rank, iso3, onExpand) {
   detail.className = "detail";
   detail.id = detailId;
   detail.hidden = true;
+
+  const range = document.createElement("p");
+  range.className = "range";
+  range.textContent =
+    `Best estimate around ${percent(group.p)}. Projections this far ahead are uncertain, ` +
+    `so the real figure could plausibly be ${percent(group.lo)} to ${percent(group.hi)}.`;
+  detail.appendChild(range);
 
   if (CRISIS_GROUPS.has(group.g)) detail.appendChild(crisisLine(iso3));
 

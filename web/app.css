@@ -130,6 +130,7 @@ button.row::after {
 button.row[aria-expanded="true"]::after { content: "\2212"; }
 
 .detail { padding: 0.25rem 0 1rem 0; }
+.range { margin: 0 0 0.75rem; color: var(--muted); font-size: 0.9rem; }
 .crisis {
     margin: 0 0 0.75rem;
     padding: 0.6rem 0.75rem;
