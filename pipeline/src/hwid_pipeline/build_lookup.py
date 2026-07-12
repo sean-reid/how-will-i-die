@@ -99,9 +99,12 @@ def build(intermediate: Path, mappings: Path, out_dir: Path) -> None:
                     continue
                 leaves = [
                     [int(r.ghe_id), round(float(r.prob), 4)]
-                    for r in gdf.sort_values("prob", ascending=False).itertuples()
+                    for r in gdf.itertuples()
                     if float(r.prob) >= LEAF_MIN
                 ]
+                # Deterministic order across platforms: rounded probability first,
+                # then cause id to break ties (float ties sort unstably otherwise).
+                leaves.sort(key=lambda leaf: (-leaf[1], leaf[0]))
                 used_groups.add(int(gid))
                 used_leaves.update(leaf[0] for leaf in leaves)
                 rows.append(

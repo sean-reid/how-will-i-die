@@ -26,6 +26,14 @@ def _load(path: Path) -> dict:
     return json.loads(path.read_text())
 
 
+def _is_leaf_list(x: object) -> bool:
+    # A group's "c" is a list of [cause_id, prob] pairs; compare it by cause id
+    # rather than position, so a stable-but-different tie order does not fail.
+    return isinstance(x, list) and all(
+        isinstance(e, list) and len(e) == 2 and isinstance(e[0], int) for e in x
+    )
+
+
 def _numbers_close(a: object, b: object, where: str, problems: list[str]) -> None:
     if isinstance(a, dict) and isinstance(b, dict):
         if a.keys() != b.keys():
@@ -34,6 +42,9 @@ def _numbers_close(a: object, b: object, where: str, problems: list[str]) -> Non
         for k in a:
             _numbers_close(a[k], b[k], f"{where}.{k}", problems)
     elif isinstance(a, list) and isinstance(b, list):
+        if _is_leaf_list(a) and _is_leaf_list(b):
+            _numbers_close(dict(a), dict(b), where, problems)
+            return
         if len(a) != len(b):
             problems.append(f"{where}: length {len(a)} vs {len(b)}")
             return
