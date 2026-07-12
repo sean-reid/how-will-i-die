@@ -1,0 +1,382 @@
+icd10_start,icd10_end,ghe_id,note
+A00,A00,110,
+A00,B99,10,group-level fallback (unspecified within group)
+A01,A01,110,
+A02,A02,370,minus B94.1
+A03,A03,110,
+A04,A04,110,
+A05,A05,370,minus B94.1
+A06,A09,110,
+A15,A19,30,
+A20,A28,370,minus B94.1
+A30,A30,365,
+A31,A31,370,minus B94.1
+A32,A32,370,minus B94.1
+A33,A35,160,
+A36,A36,140,
+A37,A37,130,
+A38,A38,370,minus B94.1
+A39,A39,170,
+A40,A49,370,minus B94.1
+A50,A53,50,
+A54,A54,70,
+A55,A56,60,
+A57,A58,90,
+A59,A59,80,
+A60,A60,85,
+A63,A64,90,
+A65,A70,370,minus B94.1
+A71,A71,310,
+A74,A79,370,minus B94.1
+A80,A81,370,minus B94.1
+A82,A82,320,
+A83,A86,180,
+A87,A89,370,minus B94.1
+A90,A91,300,
+A92,A99,370,minus B94.1
+A95,A95,315,
+B00,B04,370,minus B94.1
+B05,B05,150,
+B06,B09,370,minus B94.1
+B15,B15,186,
+B16,B19,190,"minus B17.1, B17.2, B18.2, B18.8"
+B171,B171,200,
+B172,B172,205,
+B178,B178,370,minus B94.1
+B182,B182,200,
+B188,B188,205,
+B20,B24,102,minus B20.0
+B200,B200,101,
+B25,B49,370,minus B94.1
+B50,B54,220,
+B55,B55,260,
+B56,B56,230,
+B57,B57,240,
+B58,B60,370,minus B94.1
+B64,B64,370,minus B94.1
+B65,B65,250,
+B66,B66,370,minus B94.1
+B67,B67,295,
+B68,B68,370,minus B94.1
+B69,B69,285,
+B70,B72,370,minus B94.1
+B73,B73,280,
+B740,B742,270,
+B743,B749,370,minus B94.1
+B75,B75,370,minus B94.1
+B76,B76,360,
+B77,B77,340,
+B78,B78,362,
+B79,B79,350,
+B80,B80,362,
+B81,B81,362,
+B82,B89,370,minus B94.1
+B90,B90,30,
+B91,B99,370,minus B94.1
+B941,B941,180,
+C00,C08,621,
+C00,C97,600,group-level fallback (unspecified within group)
+C09,C10,623,
+C11,C11,622,
+C12,C14,623,
+C15,C15,630,
+C16,C16,640,
+C17,C17,780,
+C18,C21,650,
+C22,C22,660,
+C23,C24,752,
+C25,C25,670,
+C26,C31,780,
+C32,C32,753,
+C33,C34,680,
+C37,C41,780,
+C43,C43,691,
+C44,C44,692,
+C45,C45,755,
+C46,C49,780,
+C50,C50,700,
+C51,C51,780,
+C52,C52,780,
+C53,C53,710,
+C54,C54,720,
+C56,C56,730,
+C57,C60,780,
+C61,C61,740,
+C62,C62,742,
+C63,C63,780,
+C64,C66,745,
+C67,C67,750,
+C68,C68,780,
+C69,C69,780,
+C70,C72,751,
+C73,C73,754,
+C74,C75,780,
+C77,C79,780,
+C81,C81,761,
+C82,C86,762,
+C88,C88,763,
+C90,C90,763,
+C91,C95,770,
+C96,C96,762,
+D00,D48,600,group-level fallback (unspecified within group)
+D00,D48,790,
+D50,D50,580,
+D50,D53,10,group-level fallback (unspecified within group)
+D51,D53,590,
+D55,D55,813,
+D55,D64,600,group-level fallback (unspecified within group)
+D56,D56,811,
+D57,D57,812,
+D58,D59,813,
+D60,D64,814,minus D64.9
+D649,D649,10,group-level fallback (unspecified within group)
+D649,D649,580,
+D65,D89,600,group-level fallback (unspecified within group)
+D65,D89,814,minus D64.9
+E00,E02,10,group-level fallback (unspecified within group)
+E00,E02,560,
+E03,E07,600,group-level fallback (unspecified within group)
+E03,E07,814,minus D64.9
+E10,E14,800,"minus E10.2, E11.2, E12.2, E13.2, E14.2"
+E10,E34,600,group-level fallback (unspecified within group)
+E102,E102,1272,
+E112,E112,1272,
+E122,E122,1272,
+E132,E132,1272,
+E142,E142,1272,
+E15,E34,814,minus D64.9
+E40,E46,10,group-level fallback (unspecified within group)
+E40,E46,550,
+E50,E50,570,
+E50,E64,10,group-level fallback (unspecified within group)
+E51,E64,590,
+E65,E88,600,group-level fallback (unspecified within group)
+E65,E88,814,minus D64.9
+F01,F03,950,minus G31.2
+F01,F99,600,group-level fallback (unspecified within group)
+F04,F09,930,minus F34.1
+F10,F10,860,
+F11,F11,871,
+F12,F12,874,
+F13,F13,875,
+F14,F14,872,
+F15,F15,873,
+F16,F16,875,
+F17,F17,930,minus F34.1
+F18,F18,875,
+F20,F29,850,
+F30,F31,840,
+F32,F33,831,
+F34,F39,930,minus F34.1
+F341,F341,832,
+F40,F44,880,
+F45,F48,930,minus F34.1
+F50,F50,890,
+F51,F69,930,minus F34.1
+F70,F79,920,
+F80,F83,930,minus F34.1
+F84,F84,900,
+F88,F89,930,minus F34.1
+F90,F90,911,
+F91,F92,912,
+F93,F99,930,minus F34.1
+G00,G00,170,
+G00,G04,10,group-level fallback (unspecified within group)
+G03,G03,170,
+G04,G04,180,
+G06,G12,1010,minus G72.1
+G06,G98,600,group-level fallback (unspecified within group)
+G14,G14,10,group-level fallback (unspecified within group)
+G14,G14,370,minus B94.1
+G20,G21,960,
+G23,G25,1010,minus G72.1
+G30,G31,950,minus G31.2
+G312,G312,860,
+G35,G35,980,
+G36,G37,1010,minus G72.1
+G40,G41,970,
+G43,G43,990,
+G44,G44,1000,
+G45,G98,1010,minus G72.1
+G721,G721,860,
+H00,H21,1090,
+H00,H61,600,group-level fallback (unspecified within group)
+H25,H26,1040,
+H27,H27,1090,
+H30,H35,1070,minus H35.3
+H353,H353,1060,
+H40,H40,1030,
+H43,H47,1090,
+H49,H52,1050,
+H53,H54,1070,minus H35.3
+H55,H61,1090,
+H65,H66,10,group-level fallback (unspecified within group)
+H65,H66,410,
+H68,H83,1090,
+H68,H93,600,group-level fallback (unspecified within group)
+H90,H91,1080,
+H92,H93,1090,
+I00,I00,1160,
+I00,I99,600,group-level fallback (unspecified within group)
+I01,I09,1110,
+I11,I15,1120,
+I20,I25,1130,
+I26,I28,1160,
+I30,I33,1150,
+I34,I37,1160,
+I38,I38,1150,
+I40,I40,1150,
+I42,I42,1150,
+I44,I51,1160,
+I60,I69,1140,
+I70,I99,1160,
+J00,J06,400,
+J00,J22,10,group-level fallback (unspecified within group)
+J09,J22,390,
+J30,J39,1200,"minus J69, J96"
+J30,J98,600,group-level fallback (unspecified within group)
+J40,J44,1180,
+J45,J46,1190,
+J47,J98,1200,"minus J69, J96"
+K00,K00,1502,
+K00,K92,600,group-level fallback (unspecified within group)
+K01,K01,1502,
+K02,K02,1480,
+K03,K03,1502,
+K04,K04,1502,
+K05,K05,1490,
+K06,K14,1502,
+K20,K22,1250,
+K25,K27,1220,
+K28,K28,1250,
+K29,K29,1241,
+K30,K31,1250,
+K35,K37,1240,
+K38,K38,1250,
+K40,K46,1250,
+K50,K52,1244,
+K55,K55,1250,
+K56,K56,1242,
+K57,K57,1250,
+K580,K580,1244,
+K589,K589,1250,
+K59,K66,1250,
+K70,K70,1230,
+K71,K73,1250,
+K74,K74,1230,
+K75,K76,1250,
+K80,K83,1246,
+K85,K86,1248,
+K90,K92,1250,
+L00,L98,600,group-level fallback (unspecified within group)
+L00,L98,1330,
+M00,M00,1390,
+M00,M99,600,group-level fallback (unspecified within group)
+M02,M02,1390,
+M05,M06,1350,
+M08,M08,1390,
+M10,M10,1370,
+M11,M13,1390,
+M15,M19,1360,
+M20,M43,1390,
+M45,M48,1380,
+M50,M54,1380,
+M60,M99,1390,
+N00,N01,1271,
+N00,N64,600,group-level fallback (unspecified within group)
+N02,N19,1273,
+N20,N23,1290,
+N25,N39,1300,
+N40,N40,1280,
+N41,N45,1300,
+N46,N46,1310,
+N47,N51,1300,
+N60,N64,1320,
+N70,N73,10,group-level fallback (unspecified within group)
+N70,N73,90,
+N75,N76,1320,
+N75,N98,600,group-level fallback (unspecified within group)
+N80,N96,1320,
+N97,N97,1310,
+N98,N98,1320,
+O00,O99,10,group-level fallback (unspecified within group)
+O00,O99,420,
+P00,P02,530,
+P00,P96,10,group-level fallback (unspecified within group)
+P03,P03,510,
+P04,P04,530,
+P05,P05,500,
+P07,P07,500,
+P08,P08,530,
+P10,P15,510,
+P20,P21,510,
+P22,P22,500,
+P23,P23,390,
+P24,P26,510,
+P27,P28,500,
+P29,P29,510,
+P35,P39,520,"minus P37.3, P37.4"
+P373,P373,220,
+P374,P374,220,
+P50,P96,530,
+Q00,Q00,1410,
+Q00,Q99,600,group-level fallback (unspecified within group)
+Q01,Q04,1460,minus Q86.0
+Q05,Q05,1410,
+Q06,Q18,1460,minus Q86.0
+Q20,Q28,1440,
+Q30,Q34,1460,minus Q86.0
+Q35,Q37,1420,
+Q38,Q89,1460,minus Q86.0
+Q860,Q860,860,
+Q90,Q90,1430,
+Q91,Q99,1450,
+R95,R95,600,group-level fallback (unspecified within group)
+R95,R95,1505,
+U04,U04,10,group-level fallback (unspecified within group)
+U04,U04,390,
+U07,U07,10,group-level fallback (unspecified within group)
+U07,U07,395,
+U09,U10,10,group-level fallback (unspecified within group)
+U09,U10,395,
+V01,V04,1530,
+V01,V99,1590,Rest of V-codes not otherwise classified; minus X59.4; minus Y85
+V01,Y89,1510,group-level fallback (unspecified within group)
+V06,V06,1530,
+V09,V80,1530,
+V87,V87,1530,
+V89,V89,1530,
+V99,V99,1530,
+W00,W19,1550,
+W20,W38,1575,
+W39,W39,1590,Rest of V-codes not otherwise classified; minus X59.4; minus Y85
+W40,W43,1575,
+W44,W44,1590,Rest of V-codes not otherwise classified; minus X59.4; minus Y85
+W45,W45,1575,
+W46,W46,1575,
+W49,W52,1575,
+W53,W64,1590,Rest of V-codes not otherwise classified; minus X59.4; minus Y85
+W65,W74,1570,
+W75,W75,1575,
+W76,W76,1575,
+W77,W99,1590,Rest of V-codes not otherwise classified; minus X59.4; minus Y85
+X00,X19,1560,
+X20,X32,1590,Rest of V-codes not otherwise classified; minus X59.4; minus Y85
+X33,X39,1580,
+X40,X40,1540,
+X41,X41,875,
+X42,X42,871,
+X43,X43,1540,
+X45,X45,860,
+X46,X48,1540,
+X49,X49,1540,
+X50,X59,1590,Rest of V-codes not otherwise classified; minus X59.4; minus Y85
+X60,X84,1610,
+X85,Y09,1620,
+Y35,Y36,1630,
+Y40,Y86,1590,Rest of V-codes not otherwise classified; minus X59.4; minus Y85
+Y85,Y85,1530,
+Y870,Y870,1610,
+Y871,Y871,1620,
+Y88,Y88,1590,Rest of V-codes not otherwise classified; minus X59.4; minus Y85
+Y89,Y89,1590,Rest of V-codes not otherwise classified; minus X59.4; minus Y85

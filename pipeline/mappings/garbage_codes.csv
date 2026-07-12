@@ -1,0 +1,21 @@
+icd10_start,icd10_end,garbage_type,note
+R00,R94,ill_defined,"Symptoms, signs and ill-defined conditions plus J69/J96; distributed pro-rata across Group I and II causes (Annex A footnote a). R95 excluded (mapped to SIDS)."
+R96,R99,ill_defined,"Symptoms, signs and ill-defined conditions plus J69/J96; distributed pro-rata across Group I and II causes (Annex A footnote a). R95 excluded (mapped to SIDS)."
+J69,J69,ill_defined,"Symptoms, signs and ill-defined conditions plus J69/J96; distributed pro-rata across Group I and II causes (Annex A footnote a). R95 excluded (mapped to SIDS)."
+J96,J96,ill_defined,"Symptoms, signs and ill-defined conditions plus J69/J96; distributed pro-rata across Group I and II causes (Annex A footnote a). R95 excluded (mapped to SIDS)."
+I46,I46,cardiovascular,"Cardiovascular garbage codes (heart failure, ventricular dysrhythmias, generalized atherosclerosis, ill-defined heart disease) reassigned mainly to ischaemic heart disease (Annex A footnote f)."
+I472,I472,cardiovascular,"Cardiovascular garbage codes (heart failure, ventricular dysrhythmias, generalized atherosclerosis, ill-defined heart disease) reassigned mainly to ischaemic heart disease (Annex A footnote f)."
+I490,I490,cardiovascular,"Cardiovascular garbage codes (heart failure, ventricular dysrhythmias, generalized atherosclerosis, ill-defined heart disease) reassigned mainly to ischaemic heart disease (Annex A footnote f)."
+I50,I50,cardiovascular,"Cardiovascular garbage codes (heart failure, ventricular dysrhythmias, generalized atherosclerosis, ill-defined heart disease) reassigned mainly to ischaemic heart disease (Annex A footnote f)."
+I514,I514,cardiovascular,"Cardiovascular garbage codes (heart failure, ventricular dysrhythmias, generalized atherosclerosis, ill-defined heart disease) reassigned mainly to ischaemic heart disease (Annex A footnote f)."
+I515,I515,cardiovascular,"Cardiovascular garbage codes (heart failure, ventricular dysrhythmias, generalized atherosclerosis, ill-defined heart disease) reassigned mainly to ischaemic heart disease (Annex A footnote f)."
+I516,I516,cardiovascular,"Cardiovascular garbage codes (heart failure, ventricular dysrhythmias, generalized atherosclerosis, ill-defined heart disease) reassigned mainly to ischaemic heart disease (Annex A footnote f)."
+I519,I519,cardiovascular,"Cardiovascular garbage codes (heart failure, ventricular dysrhythmias, generalized atherosclerosis, ill-defined heart disease) reassigned mainly to ischaemic heart disease (Annex A footnote f)."
+I709,I709,cardiovascular,"Cardiovascular garbage codes (heart failure, ventricular dysrhythmias, generalized atherosclerosis, ill-defined heart disease) reassigned mainly to ischaemic heart disease (Annex A footnote f)."
+I10,I10,cardiovascular,"Essential hypertension redistributed to ischaemic heart disease, stroke and kidney diseases (Annex A footnote g)."
+Y10,Y34,injury_undetermined_intent,Injury deaths of undetermined intent distributed pro-rata across injury sub-causes (Annex A footnote h).
+Y872,Y872,injury_undetermined_intent,Injury deaths of undetermined intent distributed pro-rata across injury sub-causes (Annex A footnote h).
+C76,C76,cancer_unspecified_site,Malignant neoplasms of other/unspecified sites and secondary neoplasms redistributed pro-rata across malignant neoplasm categories (Annex A footnote c).
+C80,C80,cancer_unspecified_site,Malignant neoplasms of other/unspecified sites and secondary neoplasms redistributed pro-rata across malignant neoplasm categories (Annex A footnote c).
+C97,C97,cancer_unspecified_site,Malignant neoplasms of other/unspecified sites and secondary neoplasms redistributed pro-rata across malignant neoplasm categories (Annex A footnote c).
+C55,C55,cancer_unspecified_site,"Cancer of uterus part unspecified, redistributed pro-rata to cervix uteri and corpus uteri cancer (Annex A footnote d)."

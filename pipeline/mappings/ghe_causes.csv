@@ -1,0 +1,209 @@
+ghe_id,ghe_name,level,parent_id,group
+10,"Communicable, maternal, perinatal and nutritional conditions",0,,I
+20,Infectious and parasitic diseases,1,10,I
+30,Tuberculosis,2,20,I
+40,STDs excluding HIV,2,20,I
+50,Syphilis,3,40,I
+60,Chlamydia,3,40,I
+70,Gonorrhoea,3,40,I
+80,Trichomoniasis,3,40,I
+85,Genital herpes,3,40,I
+90,Other STDs,3,40,I
+100,HIV/AIDS,2,20,I
+101,HIV resulting in TB,3,100,I
+102,HIV resulting in other diseases,3,100,I
+110,Diarrhoeal diseases,2,20,I
+120,Childhood-cluster diseases,2,20,I
+130,Whooping cough,3,120,I
+140,Diphtheria,3,120,I
+150,Measles,3,120,I
+160,Tetanus,3,120,I
+170,Meningitis,2,20,I
+180,Encephalitis,2,20,I
+185,Hepatitis,2,20,I
+186,Acute hepatitis A,3,185,I
+190,Acute hepatitis B,3,185,I
+200,Acute hepatitis C,3,185,I
+205,Acute hepatitis E,3,185,I
+210,Parasitic and vector diseases,2,20,I
+220,Malaria,3,210,I
+230,Trypanosomiasis,3,210,I
+240,Chagas disease,3,210,I
+250,Schistosomiasis,3,210,I
+260,Leishmaniasis,3,210,I
+270,Lymphatic filariasis,3,210,I
+280,Onchocerciasis,3,210,I
+285,Cysticercosis,3,210,I
+295,Echinococcosis,3,210,I
+300,Dengue,3,210,I
+310,Trachoma,3,210,I
+315,Yellow fever,3,210,I
+320,Rabies,3,210,I
+330,Intestinal nematode infections,2,20,I
+340,Ascariasis,3,330,I
+350,Trichuriasis,3,330,I
+360,Hookworm disease,3,330,I
+362,Food-borne trematodes,3,330,I
+365,Leprosy,2,20,I
+370,Other infectious diseases,2,20,I
+380,Respiratory infectious,1,10,I
+390,Lower respiratory infections,2,380,I
+395,COVID-19,2,380,I
+400,Upper respiratory infections,2,380,I
+410,Otitis media,2,380,I
+420,Maternal conditions,1,10,I
+490,Neonatal conditions,1,10,I
+500,Preterm birth complications,2,490,I
+510,Birth asphyxia and birth trauma,2,490,I
+520,Neonatal sepsis and infections,2,490,I
+530,Other neonatal conditions,2,490,I
+540,Nutritional deficiencies,1,10,I
+550,Protein-energy malnutrition,2,540,I
+560,Iodine deficiency,2,540,I
+570,Vitamin A deficiency,2,540,I
+580,Iron-deficiency anaemia,2,540,I
+590,Other nutritional deficiencies,2,540,I
+600,Noncommunicable diseases,0,,II
+610,Malignant neoplasms,1,600,II
+620,Mouth and oropharynx cancers,2,610,II
+621,Lip and oral cavity,3,620,II
+622,Nasopharynx,3,620,II
+623,Other pharynx,3,620,II
+630,Oesophagus cancer,2,610,II
+640,Stomach cancer,2,610,II
+650,Colon and rectum cancers,2,610,II
+660,Liver cancer,2,610,II
+670,Pancreas cancer,2,610,II
+680,"Trachea, bronchus, lung cancers",2,610,II
+690,Melanoma and other skin cancers,2,610,II
+691,Malignant skin melanoma,3,690,II
+692,Non-melanoma skin cancer,3,690,II
+700,Breast cancer,2,610,II
+710,Cervix uteri cancer,2,610,II
+720,Corpus uteri cancer,2,610,II
+730,Ovary cancer,2,610,II
+740,Prostate cancer,2,610,II
+742,Testicular cancer,2,610,II
+745,"Kidney, renal pelvis and ureter cancer",2,610,II
+750,Bladder cancer,2,610,II
+751,Brain and nervous system cancers,2,610,II
+752,Gallbladder and biliary tract cancer,2,610,II
+753,Larynx cancer,2,610,II
+754,Thyroid cancer,2,610,II
+755,Mesothelioma,2,610,II
+760,"Lymphomas, multiple myeloma",2,610,II
+761,Hodgkin lymphoma,3,760,II
+762,Non-Hodgkin lymphoma,3,760,II
+763,Multiple myeloma,3,760,II
+770,Leukaemia,2,610,II
+780,Other malignant neoplasms,2,610,II
+790,Other neoplasms,1,600,II
+800,Diabetes mellitus,1,600,II
+810,"Endocrine, blood, immune disorders",1,600,II
+811,Thalassaemias,2,810,II
+812,Sickle cell disorders and trait,2,810,II
+813,Other haemoglobinopathies and haemolytic anaemias,2,810,II
+814,"Other endocrine, blood and immune disorders",2,810,II
+820,Mental and substance use disorders,1,600,II
+830,Depressive disorders,2,820,II
+831,Major depressive disorder,3,830,II
+832,Dysthymia,3,830,II
+840,Bipolar disorder,2,820,II
+850,Schizophrenia,2,820,II
+860,Alcohol use disorders,2,820,II
+870,Drug use disorders,2,820,II
+871,Opioid use disorders,3,870,II
+872,Cocaine use disorders,3,870,II
+873,Amphetamine use disorders,3,870,II
+874,Cannabis use disorders,3,870,II
+875,Other drug use disorders,3,870,II
+880,Anxiety disorders,2,820,II
+890,Eating disorders,2,820,II
+900,Autism and Asperger syndrome,2,820,II
+910,Childhood behavioural disorders,2,820,II
+911,Attention deficit/hyperactivity syndrome,3,910,II
+912,Conduct disorder,3,910,II
+920,Idiopathic intellectual disability,2,820,II
+930,Other mental and behavioural disorders,2,820,II
+940,Neurological conditions,1,600,II
+950,Alzheimer disease and other dementias,2,940,II
+960,Parkinson disease,2,940,II
+970,Epilepsy,2,940,II
+980,Multiple sclerosis,2,940,II
+990,Migraine,2,940,II
+1000,Non-migraine headache,2,940,II
+1010,Other neurological conditions,2,940,II
+1020,Sense organ diseases,1,600,II
+1030,Glaucoma,2,1020,II
+1040,Cataracts,2,1020,II
+1050,Uncorrected refractive errors,2,1020,II
+1060,Macular degeneration,2,1020,II
+1070,Other vision loss,2,1020,II
+1080,Other hearing loss,2,1020,II
+1090,Other sense organ disorders,2,1020,II
+1100,Cardiovascular diseases,1,600,II
+1110,Rheumatic heart disease,2,1100,II
+1120,Hypertensive heart disease,2,1100,II
+1130,Ischaemic heart disease,2,1100,II
+1140,Stroke,2,1100,II
+1150,"Cardiomyopathy, myocarditis, endocarditis",2,1100,II
+1160,Other circulatory diseases,2,1100,II
+1170,Respiratory diseases,1,600,II
+1180,Chronic obstructive pulmonary disease,2,1170,II
+1190,Asthma,2,1170,II
+1200,Other respiratory diseases,2,1170,II
+1210,Digestive diseases,1,600,II
+1220,Peptic ulcer disease,2,1210,II
+1230,Cirrhosis of the liver,2,1210,II
+1240,Appendicitis,2,1210,II
+1241,Gastritis and duodenitis,2,1210,II
+1242,Paralytic ileus and intestinal obstruction,2,1210,II
+1244,Inflammatory bowel disease,2,1210,II
+1246,Gallbladder and biliary diseases,2,1210,II
+1248,Pancreatitis,2,1210,II
+1250,Other digestive diseases,2,1210,II
+1260,Genitourinary diseases,1,600,II
+1270,Kidney diseases,2,1260,II
+1271,Acute glomerulonephritis,3,1270,II
+1272,Chronic kidney disease due to diabetes,3,1270,II
+1273,Other chronic kidney disease,3,1270,II
+1280,Benign prostatic hyperplasia,2,1260,II
+1290,Urolithiasis,2,1260,II
+1300,Other urinary diseases,2,1260,II
+1310,Infertility,2,1260,II
+1320,Gynecological diseases,2,1260,II
+1330,Skin diseases,1,600,II
+1340,Musculoskeletal diseases,1,600,II
+1350,Rheumatoid arthritis,2,1340,II
+1360,Osteoarthritis,2,1340,II
+1370,Gout,2,1340,II
+1380,Back and neck pain,2,1340,II
+1390,Other musculoskeletal disorders,2,1340,II
+1400,Congenital anomalies,1,600,II
+1410,Neural tube defects,2,1400,II
+1420,Cleft lip and cleft palate,2,1400,II
+1430,Down syndrome,2,1400,II
+1440,Congenital heart anomalies,2,1400,II
+1450,Other chromosomal anomalies,2,1400,II
+1460,Other congenital anomalies,2,1400,II
+1470,Oral conditions,1,600,II
+1480,Dental caries,2,1470,II
+1490,Periodontal disease,2,1470,II
+1500,Edentulism,2,1470,II
+1502,Other oral disorders,2,1470,II
+1505,Sudden infant death syndrome,1,600,II
+1510,Injuries,0,,III
+1520,Unintentional injuries,1,1510,III
+1530,Road injury,2,1520,III
+1540,Poisonings,2,1520,III
+1550,Falls,2,1520,III
+1560,"Fire, heat and hot substances",2,1520,III
+1570,Drowning,2,1520,III
+1575,Exposure to mechanical forces,2,1520,III
+1580,Natural disasters,2,1520,III
+1590,Other unintentional injuries,2,1520,III
+1600,Intentional injuries,1,1510,III
+1610,Self-harm,2,1600,III
+1620,Interpersonal violence,2,1600,III
+1630,Collective violence and legal intervention,2,1600,III
+1700,Other pandemic-related,0,,IV
