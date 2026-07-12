@@ -47,6 +47,19 @@ group-level umbrella ranges (`ghe_id` 10, 600, 1510). The resolver picks the
 narrowest matching range; the umbrella ranges are used only when no leaf range
 matches, so a code always resolves to the finest available category.
 
+### `cause_descriptions.csv`
+Plain-language definitions of the GHE cause categories, shown when a user taps a
+cause name on the site to understand what it means. Columns:
+- `ghe_id`          - GHE code matching `ghe_causes.csv`.
+- `lay_description` - one short, plain sentence (roughly 6-16 words) describing
+  the cause in everyday words.
+
+Covers every leaf `ghe_id` that appears in `icd10_to_ghe.csv` (the causes that
+can show up in results), plus the parent and group `ghe_id`s so grouping labels
+also have text. The descriptions are faithful lay glosses of the standard
+meaning of each GHE cause name. They add no statistics, risk figures, or advice,
+and rely on no source beyond the ordinary clinical meaning of each condition.
+
 ### `garbage_codes.csv`
 Ill-defined / "garbage" codes that WHO redistributes rather than counting
 directly. Columns `icd10_start, icd10_end, garbage_type, note`. Types:
