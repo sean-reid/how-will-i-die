@@ -20,8 +20,9 @@ jobs:
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run pytest -q
-      # Added in phase 3: rebuild the lookup from the committed intermediate and
-      # assert it matches web/data byte-for-byte (determinism gate).
+      # Determinism gate: rebuild the lookup from the committed intermediate and
+      # confirm it matches the committed web/data, so the shards cannot drift.
+      - run: uv run python -m hwid_pipeline.check_lookup
 
   web:
     runs-on: ubuntu-latest
