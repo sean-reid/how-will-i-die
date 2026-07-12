@@ -34,21 +34,30 @@
 
         <h2>Where the data comes from</h2>
         <p>
-            Two World Health Organization sources, covering 2000 to 2021:
+            World Health Organization data, covering 2000 to 2021, across about
+            185 countries:
         </p>
         <ul>
             <li>
                 <strong>Life tables</strong> from the WHO Global Health Observatory,
                 which describe how likely people are to survive from one age to the
-                next.
+                next. These cover every country.
             </li>
             <li>
-                <strong>Cause-of-death data</strong> from the WHO Mortality Database,
-                national records of what people actually died of, coded by cause. We
-                reassign ill-defined codes onto real causes the way WHO does, so the
-                ranking is not distorted.
+                <strong>Cause-of-death data</strong> comes from one of two sources,
+                depending on the country. For countries with detailed, near-complete
+                death registration we use the WHO Mortality Database, national records
+                of what people actually died of, coded in fine detail by cause and
+                five-year age. For the rest we fall back to the WHO Global Health
+                Estimates, WHO's own modeled figures, which use broader age bands and
+                less cause detail. Results built on the modeled figures are labelled as
+                a regional modeled estimate and are treated as less certain.
             </li>
         </ul>
+        <p>
+            Either way, we reassign ill-defined codes onto real causes the way WHO
+            does, so the ranking is not distorted.
+        </p>
 
         <h2>How the projection works</h2>
         <p>
@@ -68,9 +77,9 @@
 
         <h2>Limitations</h2>
         <ul>
-            <li>Seven countries only, chosen because their death records are detailed and near-complete.</li>
-            <li>Ages are grouped in five-year bands, and everyone over 85 is treated as one band.</li>
+            <li>For countries without detailed death registration the figures rest on WHO's modeled estimates, which are coarser and less certain; these results are labelled as such in the tool.</li>
             <li>The figures are model projections, most uncertain far into the future and for rare causes.</li>
+            <li>Ages are grouped in five-year bands, and everyone over 85 is treated as one band, so the oldest ages are coarse.</li>
             <li>Causes are shown in groups; tap a group to see the specific causes within it.</li>
             <li>Country-level figures hide large differences within a country.</li>
         </ul>
@@ -80,9 +89,9 @@
 
     <footer>
         <p class="attribution">
-            Data: WHO Global Health Observatory life tables and the WHO Mortality
-            Database, 2000 to 2021. This is a non-commercial project and is not
-            affiliated with or endorsed by WHO.
+            Data: WHO Global Health Observatory life tables, the WHO Mortality
+            Database, and the WHO Global Health Estimates, 2000 to 2021. This is a
+            non-commercial project and is not affiliated with or endorsed by WHO.
         </p>
     </footer>
 </body>

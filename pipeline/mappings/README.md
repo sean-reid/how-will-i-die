@@ -74,6 +74,23 @@ Garbage status is independent of the nominal GHE mapping: a code such as I50
 (heart failure) still carries a nominal `ghe_id` (1160, other circulatory) in
 `icd10_to_ghe.csv` and is separately flagged here for redistribution.
 
+### `display_groups.csv`
+Curated rollup that decides how causes are grouped into the ranked list shown to
+users, so a handful of readable rows appear instead of the full GHE hierarchy.
+Columns:
+- `root_ghe_id`  - the `ghe_id` whose subtree rolls up into one display row.
+- `display_label`- the label shown for that group (e.g. `Cancer`).
+
+Each leaf cause is attributed to the nearest listed `root_ghe_id`; anything not
+covered falls through to its group-level label.
+
+### `mdb_iso3.csv`
+Crosswalk from the WHO Mortality Database's numeric country codes to ISO3, so the
+Mortality Database, the Global Health Estimates, and the life tables can be
+joined on a single country key. Columns:
+- `mdb_code` - WHO Mortality Database numeric country code.
+- `iso3`     - ISO 3166-1 alpha-3 country code.
+
 ## Codes that could not be confidently mapped (flag for review)
 
 - **F00 (Dementia in Alzheimer disease)**: the annex Group II definition and the
