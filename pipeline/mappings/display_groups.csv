@@ -1,0 +1,43 @@
+root_ghe_id,display_label
+610,Cancers
+1130,Ischaemic heart disease
+1140,Stroke
+1100,Other heart and circulatory diseases
+950,Dementia and Alzheimer disease
+940,Other neurological conditions
+1180,Chronic obstructive pulmonary disease
+1170,Other respiratory diseases
+390,Lower respiratory infections
+395,COVID-19
+800,Diabetes
+1230,Liver disease
+1210,Other digestive diseases
+1270,Kidney disease
+1260,Other genitourinary diseases
+860,Alcohol use disorders
+870,Drug use disorders
+820,Other mental and substance use disorders
+100,HIV/AIDS
+30,Tuberculosis
+20,Other infectious diseases
+380,Other respiratory infections
+420,Maternal conditions
+490,Neonatal conditions
+540,Nutritional deficiencies
+10,Other communicable conditions
+790,Benign and other neoplasms
+810,"Endocrine, blood and immune disorders"
+1020,Sense organ diseases
+1330,Skin diseases
+1340,Musculoskeletal diseases
+1400,Congenital anomalies
+1470,Oral conditions
+1505,Sudden infant death syndrome
+600,Other noncommunicable diseases
+1530,Road injury
+1610,Self-harm
+1620,Interpersonal violence
+1520,Other unintentional injury
+1600,Other violence
+1510,Other injuries
+1700,Other pandemic-related

@@ -1,39 +1,139 @@
-"""Light-tier entry point: committed intermediate -> sharded lookup.
+"""Light-tier build: committed intermediate -> per-country lookup shards.
 
-Deterministic by construction (no randomness, sorted keys, fixed float
-formatting) so the output is byte-stable and CI can assert that a rebuild
-matches the committed lookup.
+Regenerates the projection from the committed intermediate, rolls the detailed
+GHE causes up to curated display groups (so, for example, cancers rank as one
+row rather than fragmenting across a dozen sites), and writes the small,
+deterministic JSON the static site reads.
 
-Usage:
-    python -m hwid_pipeline.build_lookup --intermediate ../data/intermediate \
-        --out ../web/data
+To keep the shards tiny, the repeated strings (group labels, cause names and
+definitions) live once in the shared index; each country shard references them
+by id. Output is byte-stable so CI can rebuild and compare.
+
+    python -m hwid_pipeline.build_lookup
 """
 
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
+import pandas as pd
 
-def build(intermediate_dir: Path, out_dir: Path) -> None:
-    """Read the normalized intermediate and write the per-country lookup shards.
+from .project.run import project_all
 
-    Stages (implemented in later phases):
-        1. load intermediate (common schema)
-        2. project rates forward on the cohort diagonal
-        3. competing-risks life table -> lifetime cause shares per (country, sex, age)
-        4. validate invariants and benchmarks
-        5. write web/data/index.json + web/data/<iso3>.json
-    """
-    raise NotImplementedError("projection stages land in phase 2/3")
+COUNTRY_NAMES = {
+    "USA": "United States",
+    "GBR": "United Kingdom",
+    "DEU": "Germany",
+    "FRA": "France",
+    "JPN": "Japan",
+    "CAN": "Canada",
+    "AUS": "Australia",
+}
+NOTE = "Population statistics projected from WHO mortality data, not a personal prediction."
+
+# Minimum share to show, to keep rows meaningful and shards small.
+GROUP_MIN = 0.002
+LEAF_MIN = 0.001
+
+
+def _parent_map(causes: pd.DataFrame) -> dict[int, int]:
+    return {int(r.ghe_id): int(r.parent_id) for r in causes.itertuples() if pd.notna(r.parent_id)}
+
+
+def display_map(causes: pd.DataFrame, roots: set[int]) -> dict[int, int]:
+    """Map every GHE id to its nearest ancestor (or self) that is a display root."""
+    parent = _parent_map(causes)
+    out = {}
+    for gid in causes["ghe_id"].astype(int):
+        cur = gid
+        while cur is not None and cur not in roots:
+            cur = parent.get(cur)
+        out[gid] = cur if cur is not None else gid
+    return out
+
+
+def build(intermediate: Path, mappings: Path, out_dir: Path) -> None:
+    life = pd.read_parquet(intermediate / "who_lifetables.parquet")
+    cause_deaths = pd.read_parquet(intermediate / "cause_deaths.parquet")
+    lifetime = project_all(life, cause_deaths)
+
+    causes = pd.read_csv(mappings / "ghe_causes.csv")
+    names = causes.set_index("ghe_id")["ghe_name"].to_dict()
+    labels = pd.read_csv(mappings / "display_groups.csv").set_index("root_ghe_id")["display_label"]
+    labels = labels.to_dict()
+    descriptions = (
+        pd.read_csv(mappings / "cause_descriptions.csv")
+        .set_index("ghe_id")["lay_description"]
+        .to_dict()
+    )
+    to_group = display_map(causes, set(labels))
+    lifetime["group"] = lifetime["ghe_id"].map(to_group)
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    used_leaves: set[int] = set()
+    used_groups: set[int] = set()
+    countries = []
+
+    for iso3, cdf in lifetime.groupby("iso3", sort=True):
+        cohorts = {}
+        for (sex, a0, a1), sdf in cdf.groupby(
+            ["sex", "start_age_start", "start_age_end"], sort=True, dropna=False
+        ):
+            rows = []
+            for gid, gdf in sdf.groupby("group", sort=False):
+                prob = round(float(gdf["prob"].sum()), 4)
+                if prob < GROUP_MIN:
+                    continue
+                leaves = [
+                    [int(r.ghe_id), round(float(r.prob), 4)]
+                    for r in gdf.sort_values("prob", ascending=False).itertuples()
+                    if float(r.prob) >= LEAF_MIN
+                ]
+                used_groups.add(int(gid))
+                used_leaves.update(leaf[0] for leaf in leaves)
+                rows.append(
+                    {
+                        "g": int(gid),
+                        "p": prob,
+                        "lo": round(float(gdf["prob_lo"].sum()), 4),
+                        "hi": round(float(gdf["prob_hi"].sum()), 4),
+                        "c": leaves,
+                    }
+                )
+            rows.sort(key=lambda r: (-r["p"], labels[r["g"]]))
+            end = None if pd.isna(a1) else int(a1)
+            cohorts[f"{sex}|{int(a0)}"] = {"age": [int(a0), end], "groups": rows}
+        _write_json(out_dir / f"{iso3}.json", {"iso3": iso3, "cohorts": cohorts})
+        countries.append({"iso3": iso3, "name": COUNTRY_NAMES[iso3]})
+
+    index = {
+        "countries": sorted(countries, key=lambda c: c["name"]),
+        "sexes": ["female", "male"],
+        "note": NOTE,
+        "groups": {str(g): labels[g] for g in sorted(used_groups)},
+        "causes": {
+            str(c): {"name": names[c], "def": descriptions.get(c, "")} for c in sorted(used_leaves)
+        },
+    }
+    _write_json(out_dir / "index.json", index)
+    print(f"wrote {len(countries)} country shards + index to {out_dir}")
+
+
+def _write_json(path: Path, obj: object) -> None:
+    path.write_text(
+        json.dumps(obj, sort_keys=True, ensure_ascii=False, separators=(",", ":")) + "\n"
+    )
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--intermediate", type=Path, default=Path("../data/intermediate"))
+    parser.add_argument("--mappings", type=Path, default=Path("mappings"))
     parser.add_argument("--out", type=Path, default=Path("../web/data"))
     args = parser.parse_args()
-    build(args.intermediate, args.out)
+    build(args.intermediate, args.mappings, args.out)
 
 
 if __name__ == "__main__":
