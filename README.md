@@ -1,100 +1,83 @@
 # How Will I Die?
 
-A small web app that shows the most likely causes of death for a given region,
-age, and sex, based on Global Burden of Disease (GBD) mortality data. Pick a
-location, enter an age, choose a sex, and it returns the top ten causes ranked
-by death rate.
+A small web app that shows the most likely eventual causes of death for people
+who share your country, age, and sex, projected forward from WHO mortality data.
+Pick a country, enter an age, choose a sex, and it returns a ranked list of
+causes with an approximate likelihood for each.
 
-The core is a Rust library compiled to WebAssembly with wasm-bindgen; the
-frontend is a single static `index.html` that calls into the wasm module.
+It is a fast static site. All the heavy work (trend fitting, forward
+projection, competing-risks life table) happens once at build time and is baked
+into a small precomputed lookup; the page just reads and renders it.
 
 ## Not a personal prediction
 
-This is population statistics, not a forecast about you. The rankings come from
-aggregate death rates for a whole demographic group in a region. They say
-nothing about any individual's health, history, or actual risk. Treat it as a
-way to explore GBD data, not medical or actuarial advice.
+This is population statistics, not a forecast about you. The rankings describe
+what tends to happen across a whole demographic group. They are model
+projections with real uncertainty, so the app leads with rank order and shows
+approximate likelihoods rather than false-precision decimals. Nothing here is
+medical or actuarial advice.
 
-## Prerequisites
+## How it works
 
-- [Rust](https://www.rust-lang.org/tools/install) (stable, edition 2021)
-- [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/)
-- A way to serve static files (for example `python3 -m http.server`)
+The numbers answer: for someone alive at your age, in your country, of your sex,
+what fraction will eventually die of each cause? That is computed with a
+competing-risks life table run over the cohort's remaining life on
+forward-projected rates.
 
-## Build and run
+- Survival (the life table) comes from WHO's completeness-adjusted life tables.
+- The split of deaths across causes at each age comes from the WHO Mortality
+  Database (registered deaths, five-year age groups), with ill-defined ("garbage")
+  codes redistributed onto real causes so the ranking is not distorted.
+- Rates are projected forward coherently (cause shares constrained to a single
+  all-cause trend) along the true cohort diagonal, then integrated into a
+  lifetime distribution whose cause shares sum to one.
 
-Build the wasm package:
+v1 covers a set of countries with near-complete registration and detailed
+ICD-10 coding (United States, United Kingdom, Germany, France, Japan, Canada,
+Australia), which lets us prove the method on clean data before expanding.
+
+## Layout
 
 ```
-wasm-pack build --target web
+pipeline/     Python build pipeline (uv): raw WHO data -> projection -> lookup
+  src/hwid_pipeline/{ingest,harmonize,project,validate}
+  tests/
+web/          Static site (HTML/CSS/JS) that reads the precomputed lookup
+  data/       Per-country lookup shards + index.json (committed, tiny)
+data/
+  raw/        Downloaded WHO sources (gitignored, large)
+  intermediate/  Committed normalized snapshot + provenance manifest
 ```
 
-This writes the JS glue and wasm binary into `pkg/`, which `index.html`
-imports as `./pkg/how_will_i_die.js`.
+The build is two tiers so the data stays reproducible. The heavy
+`raw -> normalized intermediate` step is run manually and commits a versioned
+snapshot plus a manifest (source URLs, WHO file dates, checksums). The light
+`intermediate -> projection -> lookup` step is deterministic and byte-stable, so
+CI can rebuild it and confirm it matches what is committed.
 
-Serve the repo root as a static site and open it in a browser:
+## Develop
+
+Pipeline (from `pipeline/`):
+
+```
+uv sync
+uv run ruff check .
+uv run pytest
+```
+
+Site (from `web/`), served over HTTP because it uses ES modules:
 
 ```
 python3 -m http.server 8000
 ```
 
-Then visit http://localhost:8000 . The module has to be loaded over HTTP;
-opening `index.html` from the filesystem will not work because of ES module
-and wasm fetch restrictions.
+## Data and attribution
 
-## Data
+Mortality data comes from the World Health Organization:
 
-Mortality figures come from the Institute for Health Metrics and Evaluation
-(IHME) Global Burden of Disease study, via the GBD Results tool:
-https://vizhub.healthdata.org/gbd-results/ .
+- WHO Mortality Database: https://platform.who.int/mortality
+- WHO Global Health Estimates: https://www.who.int/data/global-health-estimates
 
-The Rust library embeds the data at compile time with
-`include_str!("mortality_data.csv")`. That CSV is a ~38MB file and is
-gitignored, so it is not part of a fresh checkout. You need it present at
-`src/mortality_data.csv` before `wasm-pack build` will succeed.
-
-### Regenerating the data
-
-The query used against the GBD Results tool:
-
-- Measure: Deaths
-- Metric: Rate
-- Cause: all Level 3 causes plus All causes
-- Location: GBD regions
-- Age: all 5-year age groups, including 95+
-- Sex: both (Male and Female)
-
-The GBD tool rejects a single query this large ("Too many parameters
-selected"), so the download is split per region and the per-region CSVs are
-concatenated (their schema is identical). The helper in `tools/gbd-download/`
-semi-automates pulling one region at a time; see its README for details.
-
-Status: the original preprocessing pipeline was lost. The current
-`src/mortality_data.csv` was recovered from the committed wasm binary. A
-rewrite is planned that pulls a small pre-aggregated table fresh from GBD, so
-this section and the tooling will change.
-
-## Project layout
-
-```
-src/lib.rs              Rust core, exports predict() and get_locations() to JS
-src/mortality_data.csv  Embedded GBD data (gitignored, ~38MB)
-index.html              Static frontend, imports the wasm module
-pkg/                    wasm-pack build output (JS glue + wasm)
-tools/gbd-download/     Playwright helper for pulling GBD region exports
-Cargo.toml              Crate manifest
-```
-
-## License and attribution
-
-The code in this repository is licensed under the MIT License. See
-[LICENSE](LICENSE).
-
-The mortality data is not covered by that license. GBD data is provided by
-IHME under its own terms of use, which allow free use for academic and other
-non-commercial purposes with attribution. See the IHME terms and cite the GBD
-study when you use the data:
-
-> Institute for Health Metrics and Evaluation (IHME), Global Burden of Disease
-> study. Seattle, WA: IHME, University of Washington. Available from
-> https://vizhub.healthdata.org/gbd-results/ .
+The code is licensed under the MIT License (see [LICENSE](LICENSE)). The WHO
+data is not covered by that license and remains subject to WHO's own terms;
+cite WHO and the data vintage when using it, and do not imply WHO endorsement.

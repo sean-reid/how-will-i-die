@@ -1,21 +1,18 @@
-# Rust build output
-/target
-
-# Node deps (tools/gbd-download helper)
-node_modules
-
-# macOS
+# OS
 .DS_Store
 
-# Mortality data and intermediates
-# mortality_data.csv is a ~38MB file embedded via include_str! in src/lib.rs.
-# It is recovered from the committed wasm binary and must stay out of git.
-data
-mortality_data.csv
-combine
-combined.csv
+# Raw source data: large, downloaded from WHO, never committed.
+# The committed intermediate snapshot under data/intermediate/ is the
+# reproducible input the light build actually uses.
+/data/raw/
 
-# TODO: ignore pkg/ once the data table is small enough to build in CI.
-# The live site currently serves pkg/ straight from the repo, so it stays
-# tracked for now. Revisit after the GBD data rewrite (pre-aggregated table).
-# pkg/
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.ruff_cache/
+.pytest_cache/
+
+# Node / web build output
+node_modules/
+/web/dist/

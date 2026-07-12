@@ -5,54 +5,31 @@ on:
     branches: [main]
   pull_request:
 
-env:
-  CARGO_TERM_COLOR: always
-
 jobs:
-  # Formatting does not depend on the mortality data, so this runs today.
-  fmt:
-    name: rustfmt
+  pipeline:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: pipeline
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: astral-sh/setup-uv@v5
         with:
-          components: rustfmt
-      - run: cargo fmt --all --check
+          enable-cache: true
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run pytest -q
+      # Added in phase 3: rebuild the lookup from the committed intermediate and
+      # assert it matches web/data byte-for-byte (determinism gate).
 
-  # NOTE: the jobs below are wired correctly but are BLOCKED until the data is
-  # committed. src/lib.rs uses include_str!("mortality_data.csv") on a ~38MB
-  # file that is gitignored and NOT in the repo, so anything that compiles the
-  # crate fails on a clean checkout. Re-enable by removing the `if: false`
-  # guards once the GBD data rewrite lands a small pre-aggregated table that is
-  # committed to the repo.
-
-  clippy:
-    name: clippy
+  web:
     runs-on: ubuntu-latest
-    if: false # blocked: needs src/mortality_data.csv committed
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-node@v4
         with:
-          components: clippy
-      - run: cargo clippy --all-targets -- -D warnings
-
-  test:
-    name: test
-    runs-on: ubuntu-latest
-    if: false # blocked: needs src/mortality_data.csv committed
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-      - run: cargo test --all
-
-  wasm-build:
-    name: wasm-build
-    runs-on: ubuntu-latest
-    if: false # blocked: needs src/mortality_data.csv committed
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: jetli/wasm-pack-action@v0.4.0
-      - run: wasm-pack build --target web
+          node-version: "22"
+      - run: node --check web/app.js
+      # Added in phase 3: build (esbuild minify + content hashing) and run the
+      # Playwright end-to-end suite against the built site.
