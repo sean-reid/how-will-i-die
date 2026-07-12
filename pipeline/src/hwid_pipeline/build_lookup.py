@@ -22,15 +22,6 @@ import pandas as pd
 
 from .project.run import project_all
 
-COUNTRY_NAMES = {
-    "USA": "United States",
-    "GBR": "United Kingdom",
-    "DEU": "Germany",
-    "FRA": "France",
-    "JPN": "Japan",
-    "CAN": "Canada",
-    "AUS": "Australia",
-}
 NOTE = "Population statistics projected from WHO mortality data, not a personal prediction."
 
 # Minimum share to show, to keep rows meaningful and shards small.
@@ -57,7 +48,14 @@ def display_map(causes: pd.DataFrame, roots: set[int]) -> dict[int, int]:
 def build(intermediate: Path, mappings: Path, out_dir: Path) -> None:
     life = pd.read_parquet(intermediate / "who_lifetables.parquet")
     cause_deaths = pd.read_parquet(intermediate / "cause_deaths.parquet")
-    lifetime = project_all(life, cause_deaths)
+    ghe_path = intermediate / "ghe_cause_deaths.parquet"
+    ghe = pd.read_parquet(ghe_path) if ghe_path.exists() else None
+    lifetime = project_all(life, cause_deaths, ghe)
+
+    country_names = (
+        pd.read_csv(intermediate / "country_names.csv").set_index("iso3")["name"].to_dict()
+    )
+    source_by_iso = lifetime.groupby("iso3")["source"].first().to_dict()
 
     causes = pd.read_csv(mappings / "ghe_causes.csv")
     names = causes.set_index("ghe_id")["ghe_name"].to_dict()
@@ -106,7 +104,13 @@ def build(intermediate: Path, mappings: Path, out_dir: Path) -> None:
             end = None if pd.isna(a1) else int(a1)
             cohorts[f"{sex}|{int(a0)}"] = {"age": [int(a0), end], "groups": rows}
         _write_json(out_dir / f"{iso3}.json", {"iso3": iso3, "cohorts": cohorts})
-        countries.append({"iso3": iso3, "name": COUNTRY_NAMES[iso3]})
+        countries.append(
+            {
+                "iso3": iso3,
+                "name": country_names.get(iso3, iso3),
+                "source": source_by_iso.get(iso3, "mdb"),
+            }
+        )
 
     index = {
         "countries": sorted(countries, key=lambda c: c["name"]),
