@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'self' data:; base-uri 'none'">
+    <title>How this is calculated - How Will I Die?</title>
+    <meta name="description" content="How the projections are calculated, the data sources, and the limitations.">
+    <meta name="theme-color" content="#0b7285">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="app.css">
+</head>
+<body>
+    <main>
+        <h1>How this is calculated</h1>
+        <p class="reframe">
+            This site shows the most common eventual causes of death for a group of
+            people who share your country, age, and sex. It is a population statistic,
+            not a prediction about you as an individual.
+        </p>
+
+        <h2>What the number means</h2>
+        <p>
+            Pick a country, an age, and a sex, and the site answers one question:
+            among people like that who are alive today, what share will eventually die
+            of each cause? So a figure of "about 1 in 6" for cancer means that of a
+            large group of similar people, roughly one in six are projected to die of
+            cancer at some point, not that it will happen this year or to you.
+        </p>
+        <p>
+            Rank order is more reliable than the exact figures. The percentages are
+            projections with real uncertainty, so treat them as approximate.
+        </p>
+
+        <h2>Where the data comes from</h2>
+        <p>
+            Two World Health Organization sources, covering 2000 to 2021:
+        </p>
+        <ul>
+            <li>
+                <strong>Life tables</strong> from the WHO Global Health Observatory,
+                which describe how likely people are to survive from one age to the
+                next.
+            </li>
+            <li>
+                <strong>Cause-of-death data</strong> from the WHO Mortality Database,
+                national records of what people actually died of, coded by cause. We
+                reassign ill-defined codes onto real causes the way WHO does, so the
+                ranking is not distorted.
+            </li>
+        </ul>
+
+        <h2>How the projection works</h2>
+        <p>
+            We look at how death rates and the mix of causes have changed over the last
+            two decades in each country, and carry those trends forward. Then, for a
+            person alive at your age today, we follow a group like you through the rest
+            of their lives on those projected rates, adding up the chance of eventually
+            dying of each cause. Because everyone dies of something, the shares add up
+            to 100 percent.
+        </p>
+        <p>
+            This is a genuine look forward, not a snapshot of who dies at your age now.
+            A young adult is far more likely to die of an injury this year than of heart
+            disease, but over a whole lifetime the long-term diseases dominate, and that
+            is what the projection reflects.
+        </p>
+
+        <h2>Limitations</h2>
+        <ul>
+            <li>Seven countries only, chosen because their death records are detailed and near-complete.</li>
+            <li>Ages are grouped in five-year bands, and everyone over 85 is treated as one band.</li>
+            <li>The figures are model projections, most uncertain far into the future and for rare causes.</li>
+            <li>Causes are shown in groups; tap a group to see the specific causes within it.</li>
+            <li>Country-level figures hide large differences within a country.</li>
+        </ul>
+
+        <p><a href="index.html">Back to the tool</a></p>
+    </main>
+
+    <footer>
+        <p class="attribution">
+            Data: WHO Global Health Observatory life tables and the WHO Mortality
+            Database, 2000 to 2021. This is a non-commercial project and is not
+            affiliated with or endorsed by WHO.
+        </p>
+    </footer>
+</body>
+</html>

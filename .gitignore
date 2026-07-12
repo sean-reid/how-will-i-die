@@ -16,3 +16,8 @@ __pycache__/
 # Node / web build output
 node_modules/
 /web/dist/
+
+# Playwright artifacts
+test-results/
+playwright-report/
+.last-run.json

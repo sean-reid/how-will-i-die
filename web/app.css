@@ -65,6 +65,8 @@ button {
     outline-offset: 2px;
 }
 
+a { color: var(--accent); }
+
 footer {
     margin-top: 3rem;
     padding-top: 1rem;
@@ -72,3 +74,70 @@ footer {
     color: var(--muted);
     font-size: 0.9rem;
 }
+
+/* Results */
+#result { margin-top: 1.5rem; }
+.context { color: var(--muted); margin: 0 0 1.25rem; }
+
+.headline-wrap { text-align: center; margin: 0 0 1.5rem; }
+.headline { margin: 0; }
+svg.icons { width: 220px; max-width: 60vw; height: auto; margin: 0 auto 0.5rem; display: block; }
+svg.icons .fig { fill: var(--line); opacity: 0.4; }
+svg.icons .fig.on { fill: var(--accent); opacity: 1; }
+.headline figcaption { color: var(--fg); font-size: 1.05rem; }
+
+h2 { font-size: 1.15rem; margin: 1.5rem 0 0.5rem; }
+
+ol.ranking { list-style: none; margin: 0; padding: 0; }
+ol.ranking > li { border-top: 1px solid var(--line); }
+ol.ranking > li:last-child { border-bottom: 1px solid var(--line); }
+
+button.row {
+    width: 100%;
+    margin: 0;
+    padding: 0.7rem 1.6rem 0.7rem 0;
+    background: none;
+    color: var(--fg);
+    border: none;
+    border-radius: 0;
+    text-align: left;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "label freq" "bar bar";
+    gap: 0.25rem 0.75rem;
+    position: relative;
+    cursor: pointer;
+}
+button.row .label { grid-area: label; font-weight: 600; }
+button.row .freq { grid-area: freq; color: var(--muted); font-variant-numeric: tabular-nums; }
+button.row .bar {
+    grid-area: bar;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--accent);
+    width: var(--w);
+    min-width: 2px;
+    opacity: 0.85;
+}
+button.row::after {
+    content: "+";
+    position: absolute;
+    right: 0.2rem;
+    top: 0.7rem;
+    color: var(--muted);
+    font-weight: 700;
+}
+button.row[aria-expanded="true"]::after { content: "\2212"; }
+
+.detail { padding: 0.25rem 0 1rem 0; }
+.crisis {
+    margin: 0 0 0.75rem;
+    padding: 0.6rem 0.75rem;
+    border-left: 3px solid var(--accent);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    border-radius: 4px;
+}
+ul.leaves { list-style: none; margin: 0; padding: 0; }
+ul.leaves > li { padding: 0.4rem 0; }
+.leaf-name { display: block; font-weight: 600; font-size: 0.95rem; }
+.leaf-def { display: block; color: var(--muted); font-size: 0.9rem; }
