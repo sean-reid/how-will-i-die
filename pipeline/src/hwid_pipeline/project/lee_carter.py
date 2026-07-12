@@ -15,6 +15,10 @@ import pandas as pd
 FIT_YEARS = list(range(2000, 2020))  # 2000-2019 inclusive; excludes the COVID years
 JUMPOFF = 2019
 PHI = 0.98  # drift damping per forecast year
+# Cap the drift standard error so a country with a noisy time index cannot blow
+# the interval up over a long horizon. Set above the stable large countries
+# (whose drift_se tops out near 0.37), so it only bites genuine outliers.
+DRIFT_SE_CAP = 0.5
 
 
 @dataclass
@@ -51,7 +55,9 @@ def fit_lee_carter(df: pd.DataFrame, fit_years: list[int]) -> LeeCarter:
     )
     ages = piv.index.to_numpy()
     years = list(piv.columns)
-    rates = piv.to_numpy()
+    # Floor against the occasional nonpositive life-table cell in a few smaller
+    # countries so the log and SVD stay finite. A no-op for well-behaved rates.
+    rates = np.maximum(piv.to_numpy(), 1e-9)
     logm = np.log(rates)
 
     a = logm.mean(axis=1)
@@ -73,7 +79,7 @@ def fit_lee_carter(df: pd.DataFrame, fit_years: list[int]) -> LeeCarter:
     first = min(fit_years)
     drift = (kd[jump] - kd[first]) / (jump - first)
     diffs = np.diff([kd[y] for y in sorted(kd)])
-    drift_se = float(diffs.std(ddof=1) / np.sqrt(len(diffs)))
+    drift_se = min(float(diffs.std(ddof=1) / np.sqrt(len(diffs))), DRIFT_SE_CAP)
 
     return LeeCarter(
         ages=ages,

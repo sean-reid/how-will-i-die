@@ -1,31 +1,42 @@
 {
   "generated": "2026-07-11",
-  "window_years": "2000-2021",
-  "countries": [
-    "USA",
-    "GBR",
-    "DEU",
-    "FRA",
-    "JPN",
-    "CAN",
-    "AUS"
-  ],
-  "sources": {
-    "mdb_deaths": "WHO Mortality Database ICD-10 (morticd10_part1..6), cdn.who.int/media/docs/default-source/world-health-data-platform/mortality-raw-data/, files updated Feb 2026; detailed List 104, national rows",
-    "life_tables": "WHO GHO GHE 2021 life tables, ghoapi.azureedge.net indicators LIFE_0000000029..35",
-    "cause_mapping": "GHE 2021 methods annex (ghe2021_cod_methods.pdf, Annex Table A); see pipeline/mappings/"
+  "window_years": {
+    "mdb": "2000-2021",
+    "ghe": "2000/2010/2015/2019/2020/2021"
   },
-  "notes": "cause_deaths: GHE cause deaths per (iso3, year, sex, age band capped at 85+), garbage codes redistributed by type. who_lifetables: abridged life table to 85+.",
+  "countries": {
+    "total": 185,
+    "mdb_fine": 101,
+    "ghe_fallback": 84
+  },
+  "sources": {
+    "mdb_deaths": "WHO Mortality Database ICD-10 (detailed List 104/103/10M, national rows), cdn.who.int/.../mortality-raw-data/",
+    "ghe_deaths": "WHO GHE 2021 country deaths by cause/age/sex, cdn.who.int/.../global-health-estimates/ghe2021_deaths_bycountry_*.xlsx",
+    "life_tables": "WHO GHO GHE 2021 life tables (LIFE_* OData indicators), all countries",
+    "cause_mapping": "GHE 2021 methods annex; see pipeline/mappings/",
+    "mdb_iso3_crosswalk": "pipeline/mappings/mdb_iso3.csv (WHO numeric code -> ISO3)"
+  },
+  "notes": "MDB fine-age cause split is the default; GHE coarse split is the fallback for countries without recent detailed registration. Survival from WHO life tables; garbage codes redistributed; cause bands capped at 85+.",
   "files": {
     "cause_deaths.parquet": {
-      "sha256": "e750644244663c19ba4b8e4598e459bf6295c72a25ed4168647930d1adbb52fd",
-      "bytes": 3276330,
-      "rows": 716274
+      "sha256": "a4a261ae5428a609eb3f2939b67df5074f43c0a0c3837230e68e1942fba2b423",
+      "bytes": 23407697,
+      "rows": 6969240
     },
     "who_lifetables.parquet": {
-      "sha256": "b36dc72d5366e6e1dab99a9e3171ac21c94da88dbd56bb0109932052bc515a89",
-      "bytes": 600280,
-      "rows": 8778
+      "sha256": "e216bf8e2b8a1b23aaf00555686663db30b31428b069832542fd7489dddc563f",
+      "bytes": 14810106,
+      "rows": 231990
+    },
+    "ghe_cause_deaths.parquet": {
+      "sha256": "1b64d374c6b72e009869bb5bfe3452141b26d49aa43c59ef08d1fbb853b05bc7",
+      "bytes": 13407494,
+      "rows": 2641800
+    },
+    "country_names.csv": {
+      "sha256": "08c4302925fe66a33d4d4171b54db8070f9c684916eed007a734c36ae304cb69",
+      "bytes": 2834,
+      "rows": 185
     }
   }
 }

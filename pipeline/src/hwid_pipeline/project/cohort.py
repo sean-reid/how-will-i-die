@@ -17,27 +17,48 @@ from .lee_carter import LeeCarter
 NOW_YEAR = 2025
 N_DRAWS = 200
 SEED = 20260711
-# Allowance for model and extrapolation uncertainty that parameter sampling does
-# not capture (whether the fitted trends hold for decades). Widens the interval
-# in proportion to the projection horizon; 0 would leave only parametric spread.
-STRUCT_INFLATE = 2.0
 HORIZON_REF = 65.0
 
+# The interval is the data-driven draw spread, clamped to a plausible relative
+# half-width that grows with the projection horizon. The cap stops a noisy
+# country from producing a wild band; for modeled GHE data a floor makes those
+# countries visibly less certain than the registered MDB ones.
+#   cap   = CAP_BASE + CAP_SLOPE * horizon_fraction
+#   ghe: floor = GHE_FLOOR_BASE + GHE_FLOOR_SLOPE * horizon_fraction, cap *= GHE_CAP_MULT
+CAP_BASE = 0.25
+CAP_SLOPE = 0.45
+GHE_FLOOR_BASE = 0.30
+GHE_FLOOR_SLOPE = 0.35
+GHE_CAP_MULT = 1.4
+# Absolute ceiling on the half-width so no band exceeds a readable span, even for
+# the youngest, longest-horizon modeled cohorts (a "5 to 90%" range is useless).
+ABS_HALF_CAP = 0.20
 
-def _cause_band(lt_age: int) -> int:
-    # The two infant life-table bands share the 0-4 cause composition.
-    return 0 if lt_age in (0, 1) else lt_age
+
+def _containing_band(lt_age: int, band_starts: list[int]) -> int:
+    # Assign each fine life-table band the cause shares of the coarser cause band
+    # it nests inside: the largest cause-band start not exceeding this age. When
+    # the cause grid equals the life-table grid (MDB countries) this reproduces
+    # the old mapping exactly, including infants (ages 0 and 1 both map to 0).
+    chosen = band_starts[0]
+    for start in band_starts:
+        if start <= lt_age:
+            chosen = start
+        else:
+            break
+    return chosen
 
 
 def _damp(h: int, phi: float) -> float:
     return h if phi == 1 else (1 - phi**h) / (1 - phi)
 
 
-def lifetime_causes(lc: LeeCarter, comp: Composition) -> list[tuple]:
+def lifetime_causes(lc: LeeCarter, comp: Composition, source: str = "mdb") -> list[tuple]:
     """Return (start_age, end_age, ghe_id, prob, prob_lo, prob_hi) rows."""
     ages = [int(x) for x in lc.ages]
     n_bands = len(ages)
     widths = [ages[i + 1] - ages[i] for i in range(n_bands - 1)] + [np.inf]
+    band_starts = sorted(comp.bands)  # cause-band starts (18 for MDB, 7 for GHE)
 
     union = sorted({int(g) for f in comp.bands.values() for g in f.ids})
     index = {gid: i for i, gid in enumerate(union)}
@@ -83,7 +104,7 @@ def lifetime_causes(lc: LeeCarter, comp: Composition) -> list[tuple]:
 
             dd_pt = surv_pt * q_pt
             dd_dr = surv_dr * q_dr
-            cb = _cause_band(ages[b])
+            cb = _containing_band(ages[b], band_starts)
             f = comp.frac_vector(cb, diag_year, index)
             fm = comp.frac_matrix(cb, diag_year, index, z_by_band[cb])
             pi_pt += dd_pt * f
@@ -94,16 +115,24 @@ def lifetime_causes(lc: LeeCarter, comp: Composition) -> list[tuple]:
         if abs(pi_pt.sum() - 1.0) > 1e-9:
             raise ValueError(f"lifetime shares do not sum to 1 (start {start}): {pi_pt.sum()}")
 
-        # Inflate the draw spread around the point for structural uncertainty,
-        # growing with this cohort's projection horizon.
-        infl = 1.0 + STRUCT_INFLATE * (ages[-1] - start) / HORIZON_REF
-        pi_dr = np.clip(pi_pt[None, :] + (pi_dr - pi_pt[None, :]) * infl, 0.0, 1.0)
+        # Data-driven band from the draws, then a horizon- and source-aware
+        # relative-half-width clamp (see the constants above): cap tames a noisy
+        # country, and the GHE floor makes modeled data visibly less certain.
         lo = np.percentile(pi_dr, 5, axis=0)
         hi = np.percentile(pi_dr, 95, axis=0)
+        hf = (ages[-1] - start) / HORIZON_REF
+        cap = CAP_BASE + CAP_SLOPE * hf
+        floor = 0.0
+        if source == "ghe":
+            floor = GHE_FLOOR_BASE + GHE_FLOOR_SLOPE * hf
+            cap = GHE_CAP_MULT * cap
         end = None if start == max(ages) else start + 4
         for i, gid in enumerate(union):
-            if pi_pt[i] > 0:
-                p = float(pi_pt[i])
-                # The interval always contains the point estimate.
-                rows.append((start, end, gid, p, min(float(lo[i]), p), max(float(hi[i]), p)))
+            p = float(pi_pt[i])
+            if p <= 0:
+                continue
+            half = (float(hi[i]) - float(lo[i])) / 2.0
+            rel = min(max(half / p, floor), cap)
+            half = min(rel * p, ABS_HALF_CAP)
+            rows.append((start, end, gid, p, max(0.0, p - half), min(1.0, p + half)))
     return rows

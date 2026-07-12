@@ -16,9 +16,15 @@ Usage:
 from __future__ import annotations
 
 import json
+import urllib.request
 from pathlib import Path
 
 import pandas as pd
+
+_GHO_BASE = "https://ghoapi.azureedge.net/api"
+_USER_AGENT = "Mozilla/5.0 (compatible; hwid-pipeline/0.1)"
+# Only country entities (drops WHO regions, income groups, and the global row).
+_COUNTRY_ONLY = "?$filter=SpatialDimType%20eq%20%27COUNTRY%27"
 
 # GHO indicator code -> tidy column name.
 INDICATOR_COLUMNS = {
@@ -136,17 +142,50 @@ def load_lifetables(data_dir: Path) -> pd.DataFrame:
     return merged[_OUTPUT_COLUMNS]
 
 
+def _fetch_json(url: str) -> dict:
+    request = urllib.request.Request(url, headers={"User-Agent": _USER_AGENT})
+    with urllib.request.urlopen(request, timeout=180) as response:
+        return json.load(response)
+
+
+def download_all_countries(dest_dir: Path) -> Path:
+    """Download every country life-table indicator from the GHO OData API.
+
+    One JSON file per indicator, restricted to country entities. Overwrites the
+    cached files so the extract widens from the original seven countries to all
+    WHO member states. The values for any given country are identical to a
+    single-country pull, so countries already present stay bit-for-bit the same.
+    """
+    dest_dir = Path(dest_dir)
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    for code in INDICATOR_COLUMNS:
+        payload = _fetch_json(f"{_GHO_BASE}/{code}{_COUNTRY_ONLY}")
+        (dest_dir / f"{code}.json").write_text(json.dumps(payload))
+    return dest_dir
+
+
+def fetch_country_names() -> dict[str, str]:
+    """Return {ISO3 -> country name} from the GHO COUNTRY dimension."""
+    payload = _fetch_json(f"{_GHO_BASE}/DIMENSION/COUNTRY/DimensionValues")
+    return {r["Code"]: r["Title"] for r in payload["value"] if r.get("Code")}
+
+
 def main() -> None:
     import argparse
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data-dir", type=Path, default=Path("../data/raw/who/lifetables"))
     parser.add_argument(
+        "--download-all", action="store_true", help="refetch all countries from the GHO API first"
+    )
+    parser.add_argument(
         "--out",
         type=Path,
         default=Path("../data/raw/who/lifetables/extract/who_lifetables.parquet"),
     )
     args = parser.parse_args()
+    if args.download_all:
+        download_all_countries(args.data_dir)
     df = load_lifetables(args.data_dir)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     df.to_parquet(args.out, index=False)

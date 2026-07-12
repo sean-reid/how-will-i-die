@@ -22,6 +22,11 @@ SHRINK_TAU = 0.01
 # know the future cause mix, so the forecast stays near the recent observed
 # composition rather than extrapolating a 20-year slope for 80 years.
 COMP_PHI = 0.90
+# Cap on a single draw's centered-log-ratio perturbation, so extrapolating a
+# 20-year cause-share slope's uncertainty over a lifetime horizon cannot swing a
+# cause's share implausibly far (a value of 0.8 bounds one draw's share ratio to
+# about exp(+-0.8), roughly a factor of two). Bounds the interval width.
+COMP_CLR_CAP = 0.8
 
 
 @dataclass
@@ -61,8 +66,10 @@ class Composition:
         fit = self.bands[band]
         h = year - JUMPOFF
         damp = 0.0 if h <= 0 else (1 - COMP_PHI**h) / (1 - COMP_PHI)
-        trend = fit.trend[None, :] + fit.trend_se[None, :] * z
-        clr = fit.clr_jump[None, :] + trend * damp
+        # Point trend matches frac_vector; the sampled perturbation is clamped so
+        # a single draw cannot swing a share implausibly far over a long horizon.
+        pert = np.clip(fit.trend_se[None, :] * z * damp, -COMP_CLR_CAP, COMP_CLR_CAP)
+        clr = fit.clr_jump[None, :] + fit.trend[None, :] * damp + pert
         e = np.exp(clr - clr.max(axis=1, keepdims=True))
         f = e / e.sum(axis=1, keepdims=True)
         out = np.zeros((z.shape[0], len(index)))

@@ -125,9 +125,18 @@ def download_year(year: int, dest_dir: Path) -> Path:
 
 
 def load_ghe_ids(mappings_dir: Path) -> set[int]:
-    """Load the set of GHE cause ids the project recognises."""
+    """Leaf GHE cause ids (terminal categories with no children).
+
+    The country workbook lists the whole cause hierarchy: group totals and
+    sub-group rollups as well as the leaf causes. Keeping only leaves gives a
+    mutually exclusive, exhaustive cause set; keeping the rollups too would
+    double count each parent with its children (a cell can sum to several times
+    the true total).
+    """
     causes = pd.read_csv(Path(mappings_dir) / "ghe_causes.csv")
-    return set(causes["ghe_id"].astype(int))
+    ids = set(causes["ghe_id"].astype(int))
+    parents = set(causes["parent_id"].dropna().astype(int))
+    return ids - parents
 
 
 def _country_columns(raw: pd.DataFrame) -> dict[int, str]:
