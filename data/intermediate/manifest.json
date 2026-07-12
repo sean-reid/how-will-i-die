@@ -1,0 +1,31 @@
+{
+  "generated": "2026-07-11",
+  "window_years": "2000-2021",
+  "countries": [
+    "USA",
+    "GBR",
+    "DEU",
+    "FRA",
+    "JPN",
+    "CAN",
+    "AUS"
+  ],
+  "sources": {
+    "mdb_deaths": "WHO Mortality Database ICD-10 (morticd10_part1..6), cdn.who.int/media/docs/default-source/world-health-data-platform/mortality-raw-data/, files updated Feb 2026; detailed List 104, national rows",
+    "life_tables": "WHO GHO GHE 2021 life tables, ghoapi.azureedge.net indicators LIFE_0000000029..35",
+    "cause_mapping": "GHE 2021 methods annex (ghe2021_cod_methods.pdf, Annex Table A); see pipeline/mappings/"
+  },
+  "notes": "cause_deaths: GHE cause deaths per (iso3, year, sex, age band capped at 85+), garbage codes redistributed by type. who_lifetables: abridged life table to 85+.",
+  "files": {
+    "cause_deaths.parquet": {
+      "sha256": "e750644244663c19ba4b8e4598e459bf6295c72a25ed4168647930d1adbb52fd",
+      "bytes": 3276330,
+      "rows": 716274
+    },
+    "who_lifetables.parquet": {
+      "sha256": "b36dc72d5366e6e1dab99a9e3171ac21c94da88dbd56bb0109932052bc515a89",
+      "bytes": 600280,
+      "rows": 8778
+    }
+  }
+}
